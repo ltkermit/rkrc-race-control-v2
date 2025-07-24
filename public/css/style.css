@@ -73,7 +73,7 @@ button:disabled {
 /* Navigation Buttons (Back to Home, Instructions) */
 .back-button {
     position: absolute;
-    top: 20px;
+    top: 45px;
     left: 20px;
 }
 
