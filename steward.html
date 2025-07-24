@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RKRC Race Control - Steward</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+    <!-- Include NoSleep.js to keep screen awake on mobile devices -->
+    <script src="js/noSleep.min.js"></script>
+</head>
+<body>
+    <div class="back-button">
+        <a href="index.html">Home</a>
+    </div>
+    <div id="audioUnlockModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1000; justify-content: center; align-items: center; flex-direction: column;">
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center; max-width: 80%; box-shadow: 0 0 15px rgba(0,0,0,0.3);">
+            <h2 style="margin: 0 0 15px 0; font-family: Arial, sans-serif; color: #333;">Enable Audio for Race Sounds</h2>
+            <p style="margin: 0 0 20px 0; font-family: Arial, sans-serif; color: #555;">Tap the button below to enable audio playback for race events and announcements.</p>
+            <button id="unlockAudioButton" style="padding: 10px 20px; font-size: 18px; font-weight: bold; color: white; background-color: #007bff; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.3s;">Enable Audio</button>
+        </div>
+    </div>
+    <div id="firefoxRecommendation" style="display: none; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px; margin: 10px 0; text-align: center; border-radius: 5px; font-family: Arial, sans-serif; max-width: 90%; position: relative; left: 50%; transform: translateX(-50%);">
+        <p style="margin: 0;">For the best audio experience on iOS, we recommend using <strong>Firefox</strong>. Download it from the App Store for full race sound support.</p>
+        <button id="dismissRecommendation" style="margin-top: 5px; padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Dismiss</button>
+    </div>
+    <div class="container">
+        <img src="img/logo-v4-no-tag.png" width="200" alt="RKRC Logo">
+        <h1>Race Control</h1>
+        <h2>Steward Mode</h2>
+        <div class="settings">
+            <label for="raceTime">Race Minutes:</label>
+            <select id="raceTime">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5" selected>5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+            <button class="start" id="startRace" disabled>Start Race</button>
+        </div>
+        <div class="practice-mode-section">
+            <label for="practiceMode" class="practice-checkbox-label">
+                <input type="checkbox" id="practiceMode">
+                Practice Mode
+            </label>
+        </div>
+        <div class="timer" id="timer">00:00</div>
+        <div class="controls">
+            <button id="yellowFlag" disabled>Yellow Flag</button>
+            <button id="redFlag" disabled>Red Flag</button>
+            <button id="restart" disabled>Restart</button>
+        </div>
+        <div class="voice-selector">
+            <label for="voiceSelect">Voice Announcer: </label>
+            <select id="voiceSelect">
+                <option value="america" selected>American Announcer</option>
+                <option value="europe">European Announcer</option>
+                <option value="merica">NASCAR</option>
+            </select>
+        </div>
+        <div id="flagCountDisplay" style="display: none; text-align: center; margin-top: 20px;">
+            <!-- Flag counts will be dynamically inserted here -->
+        </div>
+    </div>
+    <div id="visualNotificationContainer" style="position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 999; display: flex; flex-direction: column; align-items: center; pointer-events: none;">
+        <!-- Visual notifications will be dynamically inserted here -->
+    </div>
+    <div class="footer">
+        <a href="https://rkrc.club" target="_blank">RKRC </a>- Code available on <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank">GitHub</a>        
+    </div>
+    <!-- Audio elements for different events -->
+    <audio id="startEnginesSound" src="audio/america/start-engines.mp3" preload="auto"></audio>
+    <audio id="beepSound" src="audio/beep.mp3" preload="auto"></audio>
+    <audio id="startBeepSound" src="audio/start-beep.mp3" preload="auto"></audio>
+    <audio id="yellowOnSound" src="audio/america/yellow-on.mp3" preload="auto"></audio>
+    <audio id="yellowOffSound" src="audio/america/yellow-off.mp3" preload="auto"></audio>
+    <audio id="redOnSound" src="audio/america/red-on.mp3" preload="auto"></audio>
+    <audio id="redOffSound" src="audio/america/red-off.mp3" preload="auto"></audio>
+    <audio id="endSound" src="audio/america/end.mp3" preload="auto"></audio>
+    <audio id="restartSound" src="audio/america/restart.mp3" preload="auto"></audio>
+    <audio id="getReadySound" src="audio/america/get-ready.mp3" preload="auto"></audio>
+    <!-- Minute and 30-second callouts -->
+    <audio id="1-minute" src="audio/america/1-minute.mp3" preload="auto"></audio>
+    <audio id="2-minute" src="audio/america/2-minute.mp3" preload="auto"></audio>
+    <audio id="3-minute" src="audio/america/3-minute.mp3" preload="auto"></audio>
+    <audio id="4-minute" src="audio/america/4-minute.mp3" preload="auto"></audio>
+    <audio id="5-minute" src="audio/america/5-minute.mp3" preload="auto"></audio>
+    <audio id="6-minute" src="audio/america/6-minute.mp3" preload="auto"></audio>
+    <audio id="7-minute" src="audio/america/7-minute.mp3" preload="auto"></audio>
+    <audio id="8-minute" src="audio/america/8-minute.mp3" preload="auto"></audio>
+    <audio id="9-minute" src="audio/america/9-minute.mp3" preload="auto"></audio>
+    <audio id="10-minute" src="audio/america/10-minute.mp3" preload="auto"></audio>
+    <audio id="30-seconds" src="audio/america/30-seconds.mp3" preload="auto"></audio>
+    <!-- Include main timer function script -->
+    <script src="js/script.js"></script>
+</body>
+</html>
