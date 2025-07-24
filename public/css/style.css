@@ -62,7 +62,7 @@ button {
     border: 1px solid #ccc;
     border-radius: 5px;
     cursor: pointer;
-	background-color: rgb(46, 204, 113);
+	background-color: #007bff;
 }
 
 button:disabled {
@@ -93,6 +93,24 @@ button:disabled {
 
 .back-button a:hover {
     background-color: #0056b3;
+}
+
+.race-selector {
+    display: inline-block; /* Allows width/height and margin/padding to work */
+    background-color: #007bff; /* Green background (adjust as needed) */
+    border: none; /* Remove default button border */
+    color: white; /* White text */
+    padding: 30px 15px; /* Padding around the text */
+    text-decoration: none; /* Remove underline from link */
+    cursor: pointer; /* Change cursor to a hand on hover */
+    border-radius: 5px; /* Rounded corners (optional) */
+    font-size: 16px;  /* Set font size */
+    margin: 15px;      /* Add margin around each button */
+    width: 125px;
+}
+
+.race-selector-multi {
+    background-color: #5c00fc
 }
 
 /* Race Control UI Elements */
