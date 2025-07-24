@@ -452,3 +452,152 @@ button:disabled {
     margin: 10px 0 20px 0; /* Adjusted margins */
     color: #333;
 }
+/* WebSocket Connection Status Bar */
+.connection-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.status-indicator {
+    font-size: 12px;
+    transition: color 0.3s;
+}
+
+.client-count {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Adjust container for connection bar */
+body.has-connection-bar .container {
+    margin-top: 60px;
+}
+
+/* Mode section on home page */
+.mode-section {
+    margin: 30px 0;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.mode-section h2 {
+    margin-top: 0;
+    color: #333;
+}
+
+/* Director and Spectator buttons */
+.button.director {
+    background-color: #9b59b6;
+}
+
+.button.director:hover {
+    background-color: #8e44ad;
+}
+
+.button.spectator {
+    background-color: #3498db;
+}
+
+.button.spectator:hover {
+    background-color: #2980b9;
+}
+
+/* Connected clients display */
+.connected-clients {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 5px;
+}
+
+.connected-clients h3 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.client-item {
+    padding: 5px 10px;
+    margin: 5px 0;
+    background: white;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.director-badge, .spectator-badge {
+    font-size: 16px;
+}
+
+/* Spectator specific styles */
+.spectator-container {
+    max-width: 600px;
+}
+
+.timer.spectator {
+    font-size: 72px;
+    margin: 30px 0;
+}
+
+.flag-indicators {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.flag-indicator {
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+}
+
+.flag-indicator.active {
+    opacity: 1;
+    animation: pulse 1s infinite;
+}
+
+.yellow-indicator {
+    background-color: #f1c40f;
+}
+
+.red-indicator {
+    background-color: #e74c3c;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.audio-controls {
+    margin-top: 20px;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 5px;
+}
+
+.race-info {
+    font-size: 18px;
+    margin: 20px 0;
+    padding: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}

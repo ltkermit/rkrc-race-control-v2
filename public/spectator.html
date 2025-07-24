@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RKRC Race Control - Spectator View</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico">
+</head>
+<body>
+    <div class="back-button">
+        <a href="index.html">Home</a>
+    </div>
+    
+    <div class="connection-bar">
+        <span id="connectionStatus" class="status-indicator">●</span>
+        <span id="connectionText">Connecting...</span>
+        <span id="clientCount" class="client-count">0 devices</span>
+    </div>
+    
+    <div class="container spectator-container">
+        <img src="img/logo-v4-no-tag.png" width="200" alt="RKRC Logo">
+        <h1>Race Control</h1>
+        <h2>Spectator View</h2>
+        
+        <div class="race-info" id="raceInfo">
+            <p id="raceStatus">Waiting for race to start...</p>
+        </div>
+        
+        <div class="timer spectator" id="timer">00:00</div>
+        
+        <div class="flag-indicators">
+            <div id="yellowIndicator" class="flag-indicator yellow-indicator">
+                YELLOW FLAG
+            </div>
+            <div id="redIndicator" class="flag-indicator red-indicator">
+                RED FLAG
+            </div>
+        </div>
+        
+        <div id="flagCountDisplay" style="display: none;"></div>
+        
+        <div class="audio-controls">
+            <label>
+                <input type="checkbox" id="audioEnabled" checked>
+                Enable Audio Announcements
+            </label>
+        </div>
+    </div>
+    
+    <div id="visualNotificationContainer"></div>
+    
+    <div class="footer">
+        <a href="https://rkrc.club" target="_blank">RKRC</a> - Code available on <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank">GitHub</a>
+    </div>
+    
+    <!-- Audio elements for spectator -->
+    <audio id="beepSound" src="audio/beep.mp3" preload="auto"></audio>
+    <audio id="yellowOnSound" src="audio/america/yellow-on.mp3" preload="auto"></audio>
+    <audio id="yellowOffSound" src="audio/america/yellow-off.mp3" preload="auto"></audio>
+    <audio id="redOnSound" src="audio/america/red-on.mp3" preload="auto"></audio>
+    <audio id="redOffSound" src="audio/america/red-off.mp3" preload="auto"></audio>
+    <audio id="endSound" src="audio/america/end-sound.mp3" preload="auto"></audio>
+    <audio id="30-seconds" src="audio/america/30-seconds.mp3" preload="auto"></audio>
+    <audio id="1-minute" src="audio/america/1-minute.mp3" preload="auto"></audio>
+    <audio id="2-minute" src="audio/america/2-minute.mp3" preload="auto"></audio>
+    <audio id="3-minute" src="audio/america/3-minute.mp3" preload="auto"></audio>
+    <audio id="4-minute" src="audio/america/4-minute.mp3" preload="auto"></audio>
+    <audio id="5-minute" src="audio/america/5-minute.mp3" preload="auto"></audio>
+    
+    <script src="js/websocket-client.js"></script>
+    <script src="js/spectator.js"></script>
+</body>
+</html>
