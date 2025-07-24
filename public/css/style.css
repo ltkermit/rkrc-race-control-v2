@@ -109,8 +109,16 @@ button:disabled {
     width: 125px;
 }
 
+.race-selector:hover {
+    background-color: #0056b3;
+}
+
 .race-selector-multi {
     background-color: #5c00fc
+}
+
+.race-selector-multi:hover {
+    background-color: #4201b2;
 }
 
 /* Race Control UI Elements */
