@@ -145,8 +145,9 @@ function setupTimerChecks() {
   }, 1000);
 }
 
-// Initialize the application when the DOM is loaded
-globalThis.addEventListener('load', initializeApp);
-
-// Setup timer checks for audio cues
-setupTimerChecks();
+// Initialize the application when the DOM is fully loaded
+globalThis.addEventListener('DOMContentLoaded', () => {
+  console.log("DOM fully loaded, initializing app");
+  initializeApp();
+  setupTimerChecks();
+});

@@ -1,12 +1,19 @@
 // Director mode WebSocket integration with authentication
 (function () {
-  let directorName = "Race Director";
+  console.log("Initializing director mode");
+  const directorName = "Race Director";
 
   // Show password modal first
   const passwordModal = document.getElementById("passwordModal");
   const passwordForm = document.getElementById("passwordForm");
   const passwordInput = document.getElementById("passwordInput");
   const authError = document.getElementById("authError");
+
+  if (!passwordModal || !passwordForm || !passwordInput || !authError) {
+    console.error("Authentication modal elements not found in DOM");
+  } else {
+    console.log("Authentication modal elements found");
+  }
 
   // Disable all controls initially
   function disableAllControls() {
@@ -17,6 +24,7 @@
     raceTimeSelect.disabled = true;
     if (practiceModeCheckbox) practiceModeCheckbox.disabled = true;
     voiceSelect.disabled = true;
+    console.log("All controls disabled until authentication");
   }
 
   // Enable controls after authentication
@@ -26,49 +34,67 @@
     if (practiceModeCheckbox) practiceModeCheckbox.disabled = false;
     voiceSelect.disabled = false;
     // Flag buttons remain disabled until race starts
+    console.log("Controls enabled after successful authentication");
   }
 
   disableAllControls();
 
   // Authentication handlers
   raceWebSocket.onAuthRequired = function () {
-    passwordModal.style.display = "flex";
-    passwordInput.focus();
+    console.log("Authentication required, showing password modal");
+    if (passwordModal) {
+      passwordModal.style.display = "flex";
+      if (passwordInput) passwordInput.focus();
+    } else {
+      console.error("Password modal not found, cannot display");
+    }
   };
 
   raceWebSocket.onAuthSuccess = function () {
-    passwordModal.style.display = "none";
-    passwordForm.reset();
-    authError.style.display = "none";
+    console.log("Authentication successful");
+    if (passwordModal) passwordModal.style.display = "none";
+    if (passwordForm) passwordForm.reset();
+    if (authError) authError.style.display = "none";
     enableControls();
     showVisualNotification("Authentication Successful", 2000);
   };
 
   raceWebSocket.onAuthFailed = function (message) {
-    authError.textContent = message || "Invalid password";
-    authError.style.display = "block";
-    passwordInput.classList.add("shake");
-    passwordInput.focus();
-    passwordInput.select();
+    console.log("Authentication failed:", message);
+    if (authError) {
+      authError.textContent = message || "Invalid password";
+      authError.style.display = "block";
+    }
+    if (passwordInput) {
+      passwordInput.classList.add("shake");
+      passwordInput.focus();
+      passwordInput.select();
 
-    // Remove shake animation after completion
-    setTimeout(() => {
-      passwordInput.classList.remove("shake");
-    }, 500);
+      // Remove shake animation after completion
+      setTimeout(() => {
+        passwordInput.classList.remove("shake");
+      }, 500);
+    }
   };
 
   // Handle password form submission
-  passwordForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const password = passwordInput.value;
+  if (passwordForm) {
+    passwordForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const password = passwordInput ? passwordInput.value : '';
 
-    if (password) {
-      authError.style.display = "none";
-      raceWebSocket.authenticate(password);
-    }
-  });
+      if (password) {
+        if (authError) authError.style.display = "none";
+        console.log("Submitting password for authentication");
+        raceWebSocket.authenticate(password);
+      } else {
+        console.log("No password entered");
+      }
+    });
+  }
 
   // Initialize WebSocket connection
+  console.log("Initiating WebSocket connection for director");
   raceWebSocket.connect(true, directorName);
 
   // Connection status handlers
@@ -80,43 +106,58 @@
       if (connected && raceWebSocket.isAuthenticated) {
         statusElement.style.color = "#2ecc71";
         textElement.textContent = "Connected & Authenticated";
+        console.log("Connection status: Connected & Authenticated");
       } else if (connected) {
         statusElement.style.color = "#f39c12";
         textElement.textContent = "Connected - Auth Required";
+        console.log("Connection status: Connected - Auth Required");
       } else {
         statusElement.style.color = "#e74c3c";
         textElement.textContent = "Disconnected";
+        console.log("Connection status: Disconnected");
       }
+    } else {
+      console.error("Connection status elements not found in DOM");
     }
   }
 
   // WebSocket event handlers
   raceWebSocket.onConnected = function () {
+    console.log("WebSocket connected successfully");
     updateConnectionStatus(true);
   };
 
   raceWebSocket.onDisconnected = function () {
+    console.log("WebSocket disconnected");
     updateConnectionStatus(false);
     showVisualNotification("Connection Lost - Attempting to Reconnect", 3000);
     disableAllControls();
   };
 
   raceWebSocket.onReconnectFailed = function () {
+    console.log("Failed to reconnect WebSocket");
     showVisualNotification(
       "Failed to reconnect. Please refresh the page.",
       5000,
     );
     // Show password modal again for re-authentication
-    passwordModal.style.display = "flex";
+    if (passwordModal) {
+      passwordModal.style.display = "flex";
+    }
   };
 
   raceWebSocket.onInitialState = function (state, clientCount) {
-    document.getElementById("clientCount").textContent =
-      `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
+    const clientCountElement = document.getElementById("clientCount");
+    if (clientCountElement) {
+      clientCountElement.textContent =
+        `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
+    }
     updateConnectionStatus(true);
+    console.log("Received initial state:", state, "Client count:", clientCount);
 
     // Sync with current state if rejoining
     if (state.isRunning) {
+      console.log("Race is already running, syncing state");
       // Update UI to match current race state
       secondsLeft = state.secondsLeft;
       totalSeconds = state.totalSeconds;
@@ -151,8 +192,12 @@
   };
 
   raceWebSocket.onClientUpdate = function (clientCount, clients) {
-    document.getElementById("clientCount").textContent =
-      `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
+    const clientCountElement = document.getElementById("clientCount");
+    if (clientCountElement) {
+      clientCountElement.textContent =
+        `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
+    }
+    console.log("Client update received:", clientCount, "clients");
 
     // Update connected clients list
     const clientsList = document.getElementById("clientsList");
@@ -178,35 +223,38 @@
   };
 
   // Override start race to broadcast
-  const originalStartRaceClick = startRaceBtn.onclick;
-  startRaceBtn.addEventListener("click", function () {
-    // Wait for the race to actually start (after countdown)
-    const checkRaceStart = setInterval(() => {
-      if (isRunning && raceWebSocket.isReady()) {
-        clearInterval(checkRaceStart);
-        raceWebSocket.send({
-          type: "start-race",
-          state: {
-            isRunning: true,
-            isPracticeMode: isPracticeMode,
-            totalSeconds: totalSeconds,
-            secondsLeft: secondsLeft,
-            voice: voiceSelect.value,
-            raceTimeMinutes: parseInt(raceTimeSelect.value),
-            yellowFlagCount: 0,
-            redFlagCount: 0,
-            isYellowFlag: false,
-            isRedFlag: false,
-          },
-        });
-      }
-    }, 100);
-  });
+  if (startRaceBtn) {
+    startRaceBtn.addEventListener("click", function () {
+      console.log("Start Race clicked, waiting for race to start for broadcast");
+      // Wait for the race to actually start (after countdown)
+      const checkRaceStart = setInterval(() => {
+        if (isRunning && raceWebSocket.isReady()) {
+          clearInterval(checkRaceStart);
+          raceWebSocket.send({
+            type: "start-race",
+            state: {
+              isRunning: true,
+              isPracticeMode: isPracticeMode,
+              totalSeconds: totalSeconds,
+              secondsLeft: secondsLeft,
+              voice: voiceSelect.value,
+              raceTimeMinutes: parseInt(raceTimeSelect.value),
+              yellowFlagCount: 0,
+              redFlagCount: 0,
+              isYellowFlag: false,
+              isRedFlag: false,
+            },
+          });
+          console.log("Race started, broadcasted state to clients");
+        }
+      }, 100);
+    });
+  }
 
   // Timer sync - send updates every second when running
   let lastSyncedSecond = -1;
   const originalUpdateTimer = updateTimerDisplay;
-  window.updateTimerDisplay = function () {
+  globalThis.updateTimerDisplay = function () {
     originalUpdateTimer();
 
     // Sync timer every second
@@ -218,50 +266,60 @@
         type: "timer-update",
         secondsLeft: secondsLeft,
       });
+      console.log("Timer updated, sync sent:", secondsLeft);
     }
   };
 
   // Flag controls broadcasting
-  yellowFlagBtn.addEventListener("click", function () {
-    // Wait for flag state to update
-    setTimeout(() => {
-      if (raceWebSocket.isReady()) {
-        raceWebSocket.send({
-          type: "flag-change",
-          flag: "yellow",
-          active: isYellowFlag,
-        });
-      }
-    }, 100);
-  });
+  if (yellowFlagBtn) {
+    yellowFlagBtn.addEventListener("click", function () {
+      // Wait for flag state to update
+      setTimeout(() => {
+        if (raceWebSocket.isReady()) {
+          raceWebSocket.send({
+            type: "flag-change",
+            flag: "yellow",
+            active: isYellowFlag,
+          });
+          console.log("Yellow flag state broadcasted:", isYellowFlag);
+        }
+      }, 100);
+    });
+  }
 
-  redFlagBtn.addEventListener("click", function () {
-    // Wait for flag state to update
-    setTimeout(() => {
-      if (raceWebSocket.isReady()) {
-        raceWebSocket.send({
-          type: "flag-change",
-          flag: "red",
-          active: isRedFlag,
-          isRunning: isRunning,
-        });
-      }
-    }, 100);
-  });
+  if (redFlagBtn) {
+    redFlagBtn.addEventListener("click", function () {
+      // Wait for flag state to update
+      setTimeout(() => {
+        if (raceWebSocket.isReady()) {
+          raceWebSocket.send({
+            type: "flag-change",
+            flag: "red",
+            active: isRedFlag,
+            isRunning: isRunning,
+          });
+          console.log("Red flag state broadcasted:", isRedFlag, "Running:", isRunning);
+        }
+      }, 100);
+    });
+  }
 
   // Voice change broadcasting
-  voiceSelect.addEventListener("change", function () {
-    if (raceWebSocket.isReady()) {
-      raceWebSocket.send({
-        type: "voice-change",
-        voice: voiceSelect.value,
-      });
-    }
-  });
+  if (voiceSelect) {
+    voiceSelect.addEventListener("change", function () {
+      if (raceWebSocket.isReady()) {
+        raceWebSocket.send({
+          type: "voice-change",
+          voice: voiceSelect.value,
+        });
+        console.log("Voice changed broadcasted:", voiceSelect.value);
+      }
+    });
+  }
 
   // Race end broadcasting
   const originalCheckTimeMarks = checkTimeMarks;
-  window.checkTimeMarks = function () {
+  globalThis.checkTimeMarks = function () {
     originalCheckTimeMarks();
 
     // Check if race just ended
@@ -273,50 +331,54 @@
           redFlagCount: redFlagCount,
         },
       });
+      console.log("Race ended, broadcasted flag counts");
     }
   };
 
   // Restart broadcasting
-  restartBtn.addEventListener("click", function () {
-    setTimeout(() => {
-      if (raceWebSocket.isReady()) {
-        raceWebSocket.send({
-          type: "race-restart",
-          state: {
-            isRunning: false,
-            secondsLeft: isPracticeMode ? 0 : totalSeconds,
-            isYellowFlag: false,
-            isRedFlag: false,
-            yellowFlagCount: 0,
-            redFlagCount: 0,
-            isPracticeMode: isPracticeMode,
-            totalSeconds: totalSeconds,
-            voice: voiceSelect.value,
-            raceTimeMinutes: parseInt(raceTimeSelect.value),
-          },
-        });
-      }
-    }, 100);
-  });
+  if (restartBtn) {
+    restartBtn.addEventListener("click", function () {
+      setTimeout(() => {
+        if (raceWebSocket.isReady()) {
+          raceWebSocket.send({
+            type: "race-restart",
+            state: {
+              isRunning: false,
+              secondsLeft: isPracticeMode ? 0 : totalSeconds,
+              isYellowFlag: false,
+              isRedFlag: false,
+              yellowFlagCount: 0,
+              redFlagCount: 0,
+              isPracticeMode: isPracticeMode,
+              totalSeconds: totalSeconds,
+              voice: voiceSelect.value,
+              raceTimeMinutes: parseInt(raceTimeSelect.value),
+            },
+          });
+          console.log("Race restart broadcasted");
+        }
+      }, 100);
+    });
+  }
 
   // Keyboard shortcuts
   document.addEventListener("keydown", (e) => {
     // Escape key handling
     if (e.key === "Escape") {
-      if (passwordModal.style.display === "flex") {
-        window.location.href = "index.html";
+      if (passwordModal && passwordModal.style.display === "flex") {
+        globalThis.location.href = "index.html";
       }
     }
 
     // Enter key in password field
-    if (e.key === "Enter" && document.activeElement === passwordInput) {
+    if (e.key === "Enter" && passwordInput && document.activeElement === passwordInput) {
       e.preventDefault();
-      passwordForm.dispatchEvent(new Event("submit"));
+      if (passwordForm) passwordForm.dispatchEvent(new Event("submit"));
     }
   });
 
   // Prevent closing the page accidentally during a race
-  window.addEventListener("beforeunload", (e) => {
+  globalThis.addEventListener("beforeunload", (e) => {
     if (isRunning && raceWebSocket.isAuthenticated) {
       e.preventDefault();
       e.returnValue =
@@ -325,7 +387,7 @@
   });
 
   // Clean up on page unload
-  window.addEventListener("unload", () => {
+  globalThis.addEventListener("unload", () => {
     raceWebSocket.disconnect();
   });
 })();

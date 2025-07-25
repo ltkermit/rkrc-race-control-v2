@@ -256,8 +256,10 @@ function restartRace() {
 
 // Initialize event listeners
 function initializeRaceLogic(noSleep) {
+  console.log("Initializing race logic event listeners");
   if (startRaceBtn) {
     startRaceBtn.addEventListener('click', () => {
+      console.log("Start Race button clicked");
       startRace();
       try {
         noSleep.enable();
@@ -266,14 +268,23 @@ function initializeRaceLogic(noSleep) {
         console.error("Failed to enable screen wake lock:", e);
       }
     });
+    console.log("Start Race button listener attached");
+  } else {
+    console.error("Start Race button not found in DOM");
   }
 
   if (yellowFlagBtn) {
     yellowFlagBtn.addEventListener('click', toggleYellowFlag);
+    console.log("Yellow Flag button listener attached");
+  } else {
+    console.error("Yellow Flag button not found in DOM");
   }
 
   if (redFlagBtn) {
     redFlagBtn.addEventListener('click', toggleRedFlag);
+    console.log("Red Flag button listener attached");
+  } else {
+    console.error("Red Flag button not found in DOM");
   }
 
   if (restartBtn) {
@@ -286,10 +297,16 @@ function initializeRaceLogic(noSleep) {
         console.error("Failed to disable screen wake lock on restart:", e);
       }
     });
+    console.log("Restart button listener attached");
+  } else {
+    console.error("Restart button not found in DOM");
   }
 
   if (practiceModeCheckbox) {
     practiceModeCheckbox.addEventListener('change', togglePracticeMode);
+    console.log("Practice Mode checkbox listener attached");
+  } else {
+    console.error("Practice Mode checkbox not found in DOM");
   }
 }
 

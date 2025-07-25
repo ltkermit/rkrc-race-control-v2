@@ -179,6 +179,18 @@
     <script src="js/uiController.js"></script>
     <script src="js/websocket-client.js"></script>
     <script src="js/script.js"></script>
+    <script>
+      console.log("Loading director-integration.js");
+    </script>
     <script src="js/director-integration.js"></script>
+    <script>
+      console.log("director-integration.js loaded, initializing WebSocket");
+      if (typeof raceWebSocket !== 'undefined') {
+        raceWebSocket.connect(true, 'Race Director');
+        console.log("WebSocket connection initiated for director");
+      } else {
+        console.error("raceWebSocket is undefined, connection failed");
+      }
+    </script>
 </body>
 </html>
