@@ -1,10 +1,12 @@
 // server/server.ts
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
+import { timingSafeEqual } from "https://deno.land/std@0.208.0/crypto/timing_safe_equal.ts";
 
 interface Client {
   id: string;
   socket: WebSocket;
   isDirector: boolean;
+  isAuthenticated: boolean;
   name?: string;
 }
 
@@ -24,6 +26,7 @@ interface RaceState {
 
 class RaceControlServer {
   private clients: Map<string, Client> = new Map();
+  private authAttempts: Map<string, number> = new Map();
   private raceState: RaceState = {
     isRunning: false,
     isPracticeMode: false,
@@ -36,13 +39,51 @@ class RaceControlServer {
     voice: 'america',
     raceTimeMinutes: 5,
   };
+  
+  // Director password - in production, use environment variable
+  private directorPassword: string;
 
   constructor() {
+    // Get password from environment or use default for development
+    this.directorPassword = Deno.env.get("DIRECTOR_PASSWORD") || "rkrc2024";
     console.log("Race Control Server initialized");
+    console.log("Director password is set:", this.directorPassword ? "Yes" : "No");
   }
 
   generateClientId(): string {
     return `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  // Secure password comparison
+  private verifyPassword(attempt: string): boolean {
+    const encoder = new TextEncoder();
+    const attemptBytes = encoder.encode(attempt);
+    const correctBytes = encoder.encode(this.directorPassword);
+    
+    // Use timing-safe comparison to prevent timing attacks
+    if (attemptBytes.length !== correctBytes.length) {
+      return false;
+    }
+    
+    return timingSafeEqual(attemptBytes, correctBytes);
+  }
+
+  // Rate limiting for auth attempts
+  private canAttemptAuth(clientId: string): boolean {
+    const attempts = this.authAttempts.get(clientId) || 0;
+    if (attempts >= 3) {
+      return false; // Max 3 attempts
+    }
+    return true;
+  }
+
+  private recordAuthAttempt(clientId: string, success: boolean) {
+    if (success) {
+      this.authAttempts.delete(clientId);
+    } else {
+      const attempts = this.authAttempts.get(clientId) || 0;
+      this.authAttempts.set(clientId, attempts + 1);
+    }
   }
 
   handleWebSocket(request: Request): Response {
@@ -55,6 +96,7 @@ class RaceControlServer {
       id: clientId,
       socket,
       isDirector,
+      isAuthenticated: !isDirector, // Spectators are always authenticated
       name: url.searchParams.get('name') || 'Anonymous'
     };
 
@@ -62,34 +104,37 @@ class RaceControlServer {
       console.log(`Client connected: ${clientId} (Director: ${isDirector})`);
       this.clients.set(clientId, client);
       
-      // Send initial state to new client
-      this.sendToClient(client, {
-        type: 'connected',
-        clientId,
-        state: this.raceState,
-        clientCount: this.clients.size
-      });
-
-      // If director, set as current director
-      if (isDirector && !this.raceState.directorId) {
-        this.raceState.directorId = clientId;
+      if (isDirector) {
+        // Send authentication request
+        this.sendToClient(client, {
+          type: 'auth-required',
+          clientId
+        });
+      } else {
+        // Spectators get immediate access
+        this.handleAuthenticatedConnection(client);
       }
-
-      // Notify all clients of new connection
-      this.broadcast({
-        type: 'client-update',
-        clientCount: this.clients.size,
-        clients: Array.from(this.clients.values()).map(c => ({
-          id: c.id,
-          name: c.name,
-          isDirector: c.isDirector
-        }))
-      });
     };
 
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        
+        // Handle authentication first
+        if (message.type === 'authenticate' && client.isDirector && !client.isAuthenticated) {
+          this.handleAuthentication(client, message.password);
+          return;
+        }
+        
+        // All other messages require authentication
+        if (client.isDirector && !client.isAuthenticated) {
+          this.sendToClient(client, {
+            type: 'auth-failed',
+            message: 'Authentication required'
+          });
+          return;
+        }
+        
         this.handleMessage(client, message);
       } catch (error) {
         console.error('Error parsing message:', error);
@@ -112,12 +157,14 @@ class RaceControlServer {
       // Notify remaining clients
       this.broadcast({
         type: 'client-update',
-        clientCount: this.clients.size,
-        clients: Array.from(this.clients.values()).map(c => ({
-          id: c.id,
-          name: c.name,
-          isDirector: c.isDirector
-        }))
+        clientCount: Array.from(this.clients.values()).filter(c => c.isAuthenticated).length,
+        clients: Array.from(this.clients.values())
+          .filter(c => c.isAuthenticated)
+          .map(c => ({
+            id: c.id,
+            name: c.name,
+            isDirector: c.isDirector
+          }))
       });
     };
 
@@ -128,10 +175,69 @@ class RaceControlServer {
     return response;
   }
 
+  private handleAuthentication(client: Client, password: string) {
+    // Check rate limiting
+    if (!this.canAttemptAuth(client.id)) {
+      this.sendToClient(client, {
+        type: 'auth-failed',
+        message: 'Too many failed attempts. Please refresh and try again.'
+      });
+      return;
+    }
+
+    if (this.verifyPassword(password)) {
+      client.isAuthenticated = true;
+      this.recordAuthAttempt(client.id, true);
+      console.log(`Director ${client.id} authenticated successfully`);
+      
+      this.sendToClient(client, {
+        type: 'auth-success'
+      });
+      
+      this.handleAuthenticatedConnection(client);
+    } else {
+      this.recordAuthAttempt(client.id, false);
+      console.log(`Director ${client.id} failed authentication`);
+      
+      this.sendToClient(client, {
+        type: 'auth-failed',
+        message: 'Invalid password'
+      });
+    }
+  }
+
+  private handleAuthenticatedConnection(client: Client) {
+    // Send initial state to authenticated client
+    this.sendToClient(client, {
+      type: 'connected',
+      clientId: client.id,
+      state: this.raceState,
+      clientCount: Array.from(this.clients.values()).filter(c => c.isAuthenticated).length
+    });
+
+    // If director, set as current director
+    if (client.isDirector && !this.raceState.directorId) {
+      this.raceState.directorId = client.id;
+    }
+
+    // Notify all clients of new connection
+    this.broadcast({
+      type: 'client-update',
+      clientCount: Array.from(this.clients.values()).filter(c => c.isAuthenticated).length,
+      clients: Array.from(this.clients.values())
+        .filter(c => c.isAuthenticated)
+        .map(c => ({
+          id: c.id,
+          name: c.name,
+          isDirector: c.isDirector
+        }))
+    });
+  }
+
   handleMessage(client: Client, message: any) {
     console.log(`Message from ${client.id}:`, message.type);
 
-    // Only directors can control the race
+    // Only authenticated directors can control the race
     if (!client.isDirector && message.type !== 'ping') {
       return;
     }
@@ -210,7 +316,9 @@ class RaceControlServer {
   broadcast(message: any, excludeId?: string) {
     const messageStr = JSON.stringify(message);
     this.clients.forEach((client) => {
-      if (client.id !== excludeId && client.socket.readyState === WebSocket.OPEN) {
+      if (client.id !== excludeId && 
+          client.socket.readyState === WebSocket.OPEN && 
+          client.isAuthenticated) {
         client.socket.send(messageStr);
       }
     });

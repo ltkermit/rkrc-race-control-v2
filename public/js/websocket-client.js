@@ -4,15 +4,20 @@ class RaceWebSocket {
     this.ws = null;
     this.isDirector = false;
     this.isConnected = false;
+    this.isAuthenticated = false;
     this.clientId = null;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.reconnectDelay = 3000;
     this.pingInterval = null;
+    this.savedPassword = null; // Store password for reconnection
+    this.savedName = null; // Store name for reconnection
   }
 
-  async connect(isDirector = false, name = 'Anonymous') {
+  async connect(isDirector = false, name = 'Anonymous', password = null) {
     this.isDirector = isDirector;
+    this.savedPassword = password;
+    this.savedName = name;
     
     // Determine WebSocket URL
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
@@ -33,7 +38,6 @@ class RaceWebSocket {
       console.log('WebSocket connected');
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      this.startPing();
       
       if (typeof this.onConnected === 'function') {
         this.onConnected();
@@ -52,6 +56,7 @@ class RaceWebSocket {
     this.ws.onclose = () => {
       console.log('WebSocket disconnected');
       this.isConnected = false;
+      this.isAuthenticated = false;
       this.stopPing();
       
       if (typeof this.onDisconnected === 'function') {
@@ -73,8 +78,40 @@ class RaceWebSocket {
     console.log('Received:', data.type);
     
     switch (data.type) {
+      case 'auth-required':
+        this.clientId = data.clientId;
+        if (typeof this.onAuthRequired === 'function') {
+          this.onAuthRequired();
+        }
+        // Auto-authenticate if we have a saved password (for reconnection)
+        if (this.savedPassword) {
+          this.authenticate(this.savedPassword);
+        }
+        break;
+        
+      case 'auth-success':
+        this.isAuthenticated = true;
+        this.startPing();
+        if (typeof this.onAuthSuccess === 'function') {
+          this.onAuthSuccess();
+        }
+        break;
+        
+      case 'auth-failed':
+        this.isAuthenticated = false;
+        // Only clear saved password if it's not a rate limit error
+        if (!data.message || !data.message.includes('Too many failed attempts')) {
+          this.savedPassword = null;
+        }
+        if (typeof this.onAuthFailed === 'function') {
+          this.onAuthFailed(data.message);
+        }
+        break;
+        
       case 'connected':
         this.clientId = data.clientId;
+        this.isAuthenticated = true;
+        this.startPing();
         if (typeof this.onInitialState === 'function') {
           this.onInitialState(data.state, data.clientCount);
         }
@@ -127,7 +164,20 @@ class RaceWebSocket {
           this.onDirectorDisconnected();
         }
         break;
+        
+      case 'pong':
+        // Server responded to ping
+        console.log('Received pong');
+        break;
     }
+  }
+
+  authenticate(password) {
+    this.savedPassword = password; // Save for reconnection
+    this.send({
+      type: 'authenticate',
+      password: password
+    });
   }
 
   send(message) {
@@ -139,9 +189,13 @@ class RaceWebSocket {
   }
 
   startPing() {
+    // Clear any existing ping interval
+    this.stopPing();
+    
+    // Ping every 30 seconds to keep connection alive
     this.pingInterval = setInterval(() => {
       this.send({ type: 'ping' });
-    }, 30000); // Ping every 30 seconds
+    }, 30000);
   }
 
   stopPing() {
@@ -157,7 +211,8 @@ class RaceWebSocket {
       console.log(`Reconnecting in ${this.reconnectDelay / 1000} seconds... (Attempt ${this.reconnectAttempts})`);
       
       setTimeout(() => {
-        this.connect(this.isDirector);
+        // Reconnect with saved credentials
+        this.connect(this.isDirector, this.savedName || 'Anonymous', this.savedPassword);
       }, this.reconnectDelay);
     } else {
       console.error('Max reconnection attempts reached');
@@ -169,11 +224,98 @@ class RaceWebSocket {
 
   disconnect() {
     this.stopPing();
+    this.reconnectAttempts = this.maxReconnectAttempts; // Prevent auto-reconnect
     if (this.ws) {
       this.ws.close();
     }
+  }
+
+  // Utility method to check if ready to send
+  isReady() {
+    return this.isConnected && this.isAuthenticated;
   }
 }
 
 // Create global instance
 const raceWebSocket = new RaceWebSocket();
+
+// Event handler placeholders (to be overridden by implementing pages)
+// These provide documentation of available events:
+/*
+raceWebSocket.onConnected = function() {
+  // Called when WebSocket connection is established
+};
+
+raceWebSocket.onDisconnected = function() {
+  // Called when WebSocket connection is lost
+};
+
+raceWebSocket.onError = function(error) {
+  // Called when WebSocket encounters an error
+};
+
+raceWebSocket.onAuthRequired = function() {
+  // Called when director authentication is required
+};
+
+raceWebSocket.onAuthSuccess = function() {
+  // Called when authentication is successful
+};
+
+raceWebSocket.onAuthFailed = function(message) {
+  // Called when authentication fails
+  // message: Error message from server
+};
+
+raceWebSocket.onInitialState = function(state, clientCount) {
+  // Called when initial race state is received
+  // state: Current race state object
+  // clientCount: Number of connected clients
+};
+
+raceWebSocket.onClientUpdate = function(clientCount, clients) {
+  // Called when client list changes
+  // clientCount: Number of connected clients
+  // clients: Array of client objects
+};
+
+raceWebSocket.onRaceStarted = function(state) {
+  // Called when race starts (spectators only)
+  // state: Race state object
+};
+
+raceWebSocket.onTimerSync = function(secondsLeft) {
+  // Called for timer synchronization (spectators only)
+  // secondsLeft: Current timer value
+};
+
+raceWebSocket.onFlagUpdate = function(flag, active, state) {
+  // Called when flag status changes (spectators only)
+  // flag: 'yellow' or 'red'
+  // active: true/false
+  // state: Current race state
+};
+
+raceWebSocket.onRaceEnded = function(state) {
+  // Called when race ends (spectators only)
+  // state: Final race state with flag counts
+};
+
+raceWebSocket.onRaceRestarted = function(state) {
+  // Called when race is restarted (spectators only)
+  // state: Reset race state
+};
+
+raceWebSocket.onVoiceChanged = function(voice) {
+  // Called when voice announcer changes (spectators only)
+  // voice: 'america', 'europe', or 'merica'
+};
+
+raceWebSocket.onDirectorDisconnected = function() {
+  // Called when the race director disconnects
+};
+
+raceWebSocket.onReconnectFailed = function() {
+  // Called when max reconnection attempts reached
+};
+*/

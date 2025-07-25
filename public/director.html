@@ -28,6 +28,29 @@
         </div>
     </div>
     
+    <!-- Password Authentication Modal -->
+    <div id="passwordModal" class="auth-modal" style="display: none;">
+        <div class="auth-modal-content">
+            <img src="img/logo-v4-no-tag.png" width="150" alt="RKRC Logo">
+            <h2>Director Authentication</h2>
+            <p>Enter the director password to access race controls</p>
+            <form id="passwordForm">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    placeholder="Enter password" 
+                    autocomplete="current-password"
+                    required
+                >
+                <div class="auth-error" id="authError" style="display: none;"></div>
+                <button type="submit" class="auth-button">Login</button>
+            </form>
+            <div class="auth-footer">
+                <a href="index.html">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+    
     <div class="container">
         <img src="img/logo-v4-no-tag.png" width="200" alt="RKRC Logo">
         <h1>Race Control</h1>
