@@ -14,32 +14,34 @@ class RaceWebSocket {
     this.savedName = null; // Store name for reconnection
   }
 
-  async connect(isDirector = false, name = 'Anonymous', password = null) {
+  async connect(isDirector = false, name = "Anonymous", password = null) {
     this.isDirector = isDirector;
     this.savedPassword = password;
     this.savedName = name;
-    
+
     // Determine WebSocket URL
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = window.location.host;
-    const wsUrl = `${protocol}//${host}?director=${isDirector}&name=${encodeURIComponent(name)}`;
-    
+    const wsUrl = `${protocol}//${host}?director=${isDirector}&name=${
+      encodeURIComponent(name)
+    }`;
+
     try {
       this.ws = new WebSocket(wsUrl);
       this.setupEventHandlers();
     } catch (error) {
-      console.error('Failed to connect:', error);
+      console.error("Failed to connect:", error);
       this.scheduleReconnect();
     }
   }
 
   setupEventHandlers() {
     this.ws.onopen = () => {
-      console.log('WebSocket connected');
+      console.log("WebSocket connected");
       this.isConnected = true;
       this.reconnectAttempts = 0;
-      
-      if (typeof this.onConnected === 'function') {
+
+      if (typeof this.onConnected === "function") {
         this.onConnected();
       }
     };
@@ -49,38 +51,38 @@ class RaceWebSocket {
         const data = JSON.parse(event.data);
         this.handleMessage(data);
       } catch (error) {
-        console.error('Error parsing message:', error);
+        console.error("Error parsing message:", error);
       }
     };
 
     this.ws.onclose = () => {
-      console.log('WebSocket disconnected');
+      console.log("WebSocket disconnected");
       this.isConnected = false;
       this.isAuthenticated = false;
       this.stopPing();
-      
-      if (typeof this.onDisconnected === 'function') {
+
+      if (typeof this.onDisconnected === "function") {
         this.onDisconnected();
       }
-      
+
       this.scheduleReconnect();
     };
 
     this.ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      if (typeof this.onError === 'function') {
+      console.error("WebSocket error:", error);
+      if (typeof this.onError === "function") {
         this.onError(error);
       }
     };
   }
 
   handleMessage(data) {
-    console.log('Received:', data.type);
-    
+    console.log("Received:", data.type);
+
     switch (data.type) {
-      case 'auth-required':
+      case "auth-required":
         this.clientId = data.clientId;
-        if (typeof this.onAuthRequired === 'function') {
+        if (typeof this.onAuthRequired === "function") {
           this.onAuthRequired();
         }
         // Auto-authenticate if we have a saved password (for reconnection)
@@ -88,86 +90,88 @@ class RaceWebSocket {
           this.authenticate(this.savedPassword);
         }
         break;
-        
-      case 'auth-success':
+
+      case "auth-success":
         this.isAuthenticated = true;
         this.startPing();
-        if (typeof this.onAuthSuccess === 'function') {
+        if (typeof this.onAuthSuccess === "function") {
           this.onAuthSuccess();
         }
         break;
-        
-      case 'auth-failed':
+
+      case "auth-failed":
         this.isAuthenticated = false;
         // Only clear saved password if it's not a rate limit error
-        if (!data.message || !data.message.includes('Too many failed attempts')) {
+        if (
+          !data.message || !data.message.includes("Too many failed attempts")
+        ) {
           this.savedPassword = null;
         }
-        if (typeof this.onAuthFailed === 'function') {
+        if (typeof this.onAuthFailed === "function") {
           this.onAuthFailed(data.message);
         }
         break;
-        
-      case 'connected':
+
+      case "connected":
         this.clientId = data.clientId;
         this.isAuthenticated = true;
         this.startPing();
-        if (typeof this.onInitialState === 'function') {
+        if (typeof this.onInitialState === "function") {
           this.onInitialState(data.state, data.clientCount);
         }
         break;
-        
-      case 'client-update':
-        if (typeof this.onClientUpdate === 'function') {
+
+      case "client-update":
+        if (typeof this.onClientUpdate === "function") {
           this.onClientUpdate(data.clientCount, data.clients);
         }
         break;
-        
-      case 'race-started':
-        if (!this.isDirector && typeof this.onRaceStarted === 'function') {
+
+      case "race-started":
+        if (!this.isDirector && typeof this.onRaceStarted === "function") {
           this.onRaceStarted(data.state);
         }
         break;
-        
-      case 'timer-sync':
-        if (!this.isDirector && typeof this.onTimerSync === 'function') {
+
+      case "timer-sync":
+        if (!this.isDirector && typeof this.onTimerSync === "function") {
           this.onTimerSync(data.secondsLeft);
         }
         break;
-        
-      case 'flag-update':
-        if (!this.isDirector && typeof this.onFlagUpdate === 'function') {
+
+      case "flag-update":
+        if (!this.isDirector && typeof this.onFlagUpdate === "function") {
           this.onFlagUpdate(data.flag, data.active, data.state);
         }
         break;
-        
-      case 'race-ended':
-        if (!this.isDirector && typeof this.onRaceEnded === 'function') {
+
+      case "race-ended":
+        if (!this.isDirector && typeof this.onRaceEnded === "function") {
           this.onRaceEnded(data.state);
         }
         break;
-        
-      case 'race-restarted':
-        if (!this.isDirector && typeof this.onRaceRestarted === 'function') {
+
+      case "race-restarted":
+        if (!this.isDirector && typeof this.onRaceRestarted === "function") {
           this.onRaceRestarted(data.state);
         }
         break;
-        
-      case 'voice-changed':
-        if (!this.isDirector && typeof this.onVoiceChanged === 'function') {
+
+      case "voice-changed":
+        if (!this.isDirector && typeof this.onVoiceChanged === "function") {
           this.onVoiceChanged(data.voice);
         }
         break;
-        
-      case 'director-disconnected':
-        if (typeof this.onDirectorDisconnected === 'function') {
+
+      case "director-disconnected":
+        if (typeof this.onDirectorDisconnected === "function") {
           this.onDirectorDisconnected();
         }
         break;
-        
-      case 'pong':
+
+      case "pong":
         // Server responded to ping
-        console.log('Received pong');
+        console.log("Received pong");
         break;
     }
   }
@@ -175,8 +179,8 @@ class RaceWebSocket {
   authenticate(password) {
     this.savedPassword = password; // Save for reconnection
     this.send({
-      type: 'authenticate',
-      password: password
+      type: "authenticate",
+      password: password,
     });
   }
 
@@ -184,17 +188,17 @@ class RaceWebSocket {
     if (this.isConnected && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.warn('WebSocket not connected, unable to send:', message);
+      console.warn("WebSocket not connected, unable to send:", message);
     }
   }
 
   startPing() {
     // Clear any existing ping interval
     this.stopPing();
-    
+
     // Ping every 30 seconds to keep connection alive
     this.pingInterval = setInterval(() => {
-      this.send({ type: 'ping' });
+      this.send({ type: "ping" });
     }, 30000);
   }
 
@@ -208,15 +212,23 @@ class RaceWebSocket {
   scheduleReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Reconnecting in ${this.reconnectDelay / 1000} seconds... (Attempt ${this.reconnectAttempts})`);
-      
+      console.log(
+        `Reconnecting in ${
+          this.reconnectDelay / 1000
+        } seconds... (Attempt ${this.reconnectAttempts})`,
+      );
+
       setTimeout(() => {
         // Reconnect with saved credentials
-        this.connect(this.isDirector, this.savedName || 'Anonymous', this.savedPassword);
+        this.connect(
+          this.isDirector,
+          this.savedName || "Anonymous",
+          this.savedPassword,
+        );
       }, this.reconnectDelay);
     } else {
-      console.error('Max reconnection attempts reached');
-      if (typeof this.onReconnectFailed === 'function') {
+      console.error("Max reconnection attempts reached");
+      if (typeof this.onReconnectFailed === "function") {
         this.onReconnectFailed();
       }
     }

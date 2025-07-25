@@ -1,142 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RKRC Race Control - Director Mode</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <script src="js/noSleep.min.js"></script>
-</head>
-<body>
+  </head>
+  <body>
     <div class="back-button">
-        <a href="index.html">Home</a>
+      <a href="index.html">Home</a>
     </div>
-    
+
     <!-- Connection Status Bar -->
     <div class="connection-bar">
-        <span id="connectionStatus" class="status-indicator">●</span>
-        <span id="connectionText">Connecting...</span>
-        <span id="clientCount" class="client-count">0 devices</span>
+      <span id="connectionStatus" class="status-indicator">●</span>
+      <span id="connectionText">Connecting...</span>
+      <span id="clientCount" class="client-count">0 devices</span>
     </div>
-    
-    <div id="audioUnlockModal" style="display: none;">
-        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
-            <h2>Enable Audio for Race Sounds</h2>
-            <p>Tap the button below to enable audio playback for race events and announcements.</p>
-            <button id="unlockAudioButton">Enable Audio</button>
-        </div>
+
+    <div id="audioUnlockModal" style="display: none">
+      <div
+        style="background: white; padding: 20px; border-radius: 10px; text-align: center"
+      >
+        <h2>Enable Audio for Race Sounds</h2>
+        <p>
+          Tap the button below to enable audio playback for race events and
+          announcements.
+        </p>
+        <button id="unlockAudioButton">Enable Audio</button>
+      </div>
     </div>
-    
+
     <!-- Password Authentication Modal -->
-    <div id="passwordModal" class="auth-modal" style="display: none;">
-        <div class="auth-modal-content">
-            <img src="img/logo-v4-no-tag.png" width="150" alt="RKRC Logo">
-            <h2>Director Authentication</h2>
-            <p>Enter the director password to access race controls</p>
-            <form id="passwordForm">
-                <input 
-                    type="password" 
-                    id="passwordInput" 
-                    placeholder="Enter password" 
-                    autocomplete="current-password"
-                    required
-                >
-                <div class="auth-error" id="authError" style="display: none;"></div>
-                <button type="submit" class="auth-button">Login</button>
-            </form>
-            <div class="auth-footer">
-                <a href="index.html">← Back to Home</a>
-            </div>
+    <div id="passwordModal" class="auth-modal" style="display: none">
+      <div class="auth-modal-content">
+        <img src="img/logo-v4-no-tag.png" width="150" alt="RKRC Logo">
+        <h2>Director Authentication</h2>
+        <p>Enter the director password to access race controls</p>
+        <form id="passwordForm">
+          <input
+            type="password"
+            id="passwordInput"
+            placeholder="Enter password"
+            autocomplete="current-password"
+            required
+          >
+          <div class="auth-error" id="authError" style="display: none"></div>
+          <button type="submit" class="auth-button">Login</button>
+        </form>
+        <div class="auth-footer">
+          <a href="index.html">← Back to Home</a>
         </div>
+      </div>
     </div>
-    
+
     <div class="container">
-        <img src="img/logo-v4-no-tag.png" width="200" alt="RKRC Logo">
-        <h1>Race Control</h1>
-        <h2>Director Mode - Multi-Device</h2>
-        
-        <div class="settings">
-            <label for="raceTime">Race Minutes:</label>
-            <select id="raceTime">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5" selected>5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-            </select>
-            <button class="start" id="startRace" disabled>Start Race</button>
-        </div>
-        
-        <div class="practice-mode-section">
-            <label for="practiceMode" class="practice-checkbox-label">
-                <input type="checkbox" id="practiceMode">
-                Practice Mode
-            </label>
-        </div>
-        
-        <div class="timer" id="timer">00:00</div>
-        
-        <div class="controls">
-            <button id="yellowFlag" disabled>Yellow Flag</button>
-            <button id="redFlag" disabled>Red Flag</button>
-            <button id="restart" disabled>Restart</button>
-        </div>
-        
-        <div class="voice-selector">
-            <label for="voiceSelect">Voice Announcer: </label>
-            <select id="voiceSelect">
-                <option value="america" selected>American Announcer</option>
-                <option value="europe">European Announcer</option>
-                <option value="merica">NASCAR</option>
-            </select>
-        </div>
-        
-        <div id="flagCountDisplay" style="display: none;"></div>
-        
-        <!-- Connected Clients Display -->
-        <div id="connectedClients" class="connected-clients" style="display: none;">
-            <h3>Connected Devices</h3>
-            <div id="clientsList"></div>
-        </div>
+      <img src="img/logo-v4-no-tag.png" width="200" alt="RKRC Logo">
+      <h1>Race Control</h1>
+      <h2>Director Mode - Multi-Device</h2>
+
+      <div class="settings">
+        <label for="raceTime">Race Minutes:</label>
+        <select id="raceTime">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5" selected>5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+        <button class="start" id="startRace" disabled>Start Race</button>
+      </div>
+
+      <div class="practice-mode-section">
+        <label for="practiceMode" class="practice-checkbox-label">
+          <input type="checkbox" id="practiceMode">
+          Practice Mode
+        </label>
+      </div>
+
+      <div class="timer" id="timer">00:00</div>
+
+      <div class="controls">
+        <button id="yellowFlag" disabled>Yellow Flag</button>
+        <button id="redFlag" disabled>Red Flag</button>
+        <button id="restart" disabled>Restart</button>
+      </div>
+
+      <div class="voice-selector">
+        <label for="voiceSelect">Voice Announcer: </label>
+        <select id="voiceSelect">
+          <option value="america" selected>American Announcer</option>
+          <option value="europe">European Announcer</option>
+          <option value="merica">NASCAR</option>
+        </select>
+      </div>
+
+      <div id="flagCountDisplay" style="display: none"></div>
+
+      <!-- Connected Clients Display -->
+      <div
+        id="connectedClients"
+        class="connected-clients"
+        style="display: none"
+      >
+        <h3>Connected Devices</h3>
+        <div id="clientsList"></div>
+      </div>
     </div>
-    
+
     <div id="visualNotificationContainer"></div>
-    
+
     <div class="footer">
-        <a href="https://rkrc.club" target="_blank">RKRC</a> - Code available on <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank">GitHub</a>
+      <a href="https://rkrc.club" target="_blank">RKRC</a> - Code available on
+      <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank"
+      >GitHub</a>
     </div>
-    
+
     <!-- Audio elements -->
-    <audio id="startEnginesSound" src="audio/america/start-engines.mp3" preload="auto"></audio>
+    <audio
+      id="startEnginesSound"
+      src="audio/america/start-engines.mp3"
+      preload="auto"
+    >
+    </audio>
     <audio id="beepSound" src="audio/beep.mp3" preload="auto"></audio>
-    <audio id="startBeepSound" src="audio/start-beep.mp3" preload="auto"></audio>
-    <audio id="yellowOnSound" src="audio/america/yellow-on.mp3" preload="auto"></audio>
-    <audio id="yellowOffSound" src="audio/america/yellow-off.mp3" preload="auto"></audio>
-    <audio id="redOnSound" src="audio/america/red-on.mp3" preload="auto"></audio>
-    <audio id="redOffSound" src="audio/america/red-off.mp3" preload="auto"></audio>
+    <audio id="startBeepSound" src="audio/start-beep.mp3" preload="auto">
+    </audio>
+    <audio id="yellowOnSound" src="audio/america/yellow-on.mp3" preload="auto">
+    </audio>
+    <audio
+      id="yellowOffSound"
+      src="audio/america/yellow-off.mp3"
+      preload="auto"
+    >
+    </audio>
+    <audio id="redOnSound" src="audio/america/red-on.mp3" preload="auto">
+    </audio>
+    <audio id="redOffSound" src="audio/america/red-off.mp3" preload="auto">
+    </audio>
     <audio id="endSound" src="audio/america/end.mp3" preload="auto"></audio>
-    <audio id="restartSound" src="audio/america/restart.mp3" preload="auto"></audio>
-    <audio id="getReadySound" src="audio/america/get-ready.mp3" preload="auto"></audio>
-    <audio id="1-minute" src="audio/america/1-minute.mp3" preload="auto"></audio>
-    <audio id="2-minute" src="audio/america/2-minute.mp3" preload="auto"></audio>
-    <audio id="3-minute" src="audio/america/3-minute.mp3" preload="auto"></audio>
-    <audio id="4-minute" src="audio/america/4-minute.mp3" preload="auto"></audio>
-    <audio id="5-minute" src="audio/america/5-minute.mp3" preload="auto"></audio>
-    <audio id="6-minute" src="audio/america/6-minute.mp3" preload="auto"></audio>
-    <audio id="7-minute" src="audio/america/7-minute.mp3" preload="auto"></audio>
-    <audio id="8-minute" src="audio/america/8-minute.mp3" preload="auto"></audio>
-    <audio id="9-minute" src="audio/america/9-minute.mp3" preload="auto"></audio>
-    <audio id="10-minute" src="audio/america/10-minute.mp3" preload="auto"></audio>
-    <audio id="30-seconds" src="audio/america/30-seconds.mp3" preload="auto"></audio>
-    
+    <audio id="restartSound" src="audio/america/restart.mp3" preload="auto">
+    </audio>
+    <audio id="getReadySound" src="audio/america/get-ready.mp3" preload="auto">
+    </audio>
+    <audio id="1-minute" src="audio/america/1-minute.mp3" preload="auto">
+    </audio>
+    <audio id="2-minute" src="audio/america/2-minute.mp3" preload="auto">
+    </audio>
+    <audio id="3-minute" src="audio/america/3-minute.mp3" preload="auto">
+    </audio>
+    <audio id="4-minute" src="audio/america/4-minute.mp3" preload="auto">
+    </audio>
+    <audio id="5-minute" src="audio/america/5-minute.mp3" preload="auto">
+    </audio>
+    <audio id="6-minute" src="audio/america/6-minute.mp3" preload="auto">
+    </audio>
+    <audio id="7-minute" src="audio/america/7-minute.mp3" preload="auto">
+    </audio>
+    <audio id="8-minute" src="audio/america/8-minute.mp3" preload="auto">
+    </audio>
+    <audio id="9-minute" src="audio/america/9-minute.mp3" preload="auto">
+    </audio>
+    <audio id="10-minute" src="audio/america/10-minute.mp3" preload="auto">
+    </audio>
+    <audio id="30-seconds" src="audio/america/30-seconds.mp3" preload="auto">
+    </audio>
+
     <script src="js/websocket-client.js"></script>
     <script src="js/script.js"></script>
     <script src="js/director-integration.js"></script>
-</body>
+  </body>
 </html>

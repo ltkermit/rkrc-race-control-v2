@@ -1,9 +1,17 @@
 {
-  "tasks": {
-    "dev": "deno run --allow-net --allow-read --watch server/server.ts",
-    "start": "deno run --allow-net --allow-read server/server.ts"
-  },
   "compilerOptions": {
-    "lib": ["deno.window", "dom"]
+    "lib": ["deno.window"]
+  },
+  "lint": {
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "useTabs": false,
+    "lineWidth": 80,
+    "indentWidth": 2,
+    "semiColons": true,
+    "singleQuote": false
   }
 }

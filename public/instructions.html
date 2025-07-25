@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RKRC Race Control - Instructions</title>
@@ -8,110 +8,168 @@
     <link rel="icon" type="image/x-icon" href="img/favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            font-family: Arial, sans-serif;
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: Arial, sans-serif;
+      }
+
+      .back-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1000; /* Ensures it stays on top */
+        border-radius: 5px;
+      }
+
+      .back-button a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      .container {
+        width: 90%; /* Fills most of the screen on small devices */
+        max-width: 800px; /* Limits width on larger screens */
+        margin: 80px auto
+          20px; /* Top margin to avoid overlap with back button */
+        padding: 20px;
+        text-align: left;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      .footer {
+        margin-top: auto;
+        padding: 10px;
+        text-align: center;
+        background-color: #f0f0f0;
+      }
+
+      /* Responsive adjustments */
+      @media screen and (max-width: 600px) {
+        .container {
+          margin: 80px 5px 20px; /* Reduced side margins on small screens */
+          width: calc(100% - 10px); /* Full width minus padding */
         }
 
         .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000; /* Ensures it stays on top */
-            border-radius: 5px;
+          top: 10px;
+          left: 10px;
+          padding: 8px 16px;
         }
-
-        .back-button a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .container {
-            width: 90%; /* Fills most of the screen on small devices */
-            max-width: 800px; /* Limits width on larger screens */
-            margin: 80px auto 20px; /* Top margin to avoid overlap with back button */
-            padding: 20px;
-            text-align: left;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .footer {
-            margin-top: auto;
-            padding: 10px;
-            text-align: center;
-            background-color: #f0f0f0;
-        }
-
-        /* Responsive adjustments */
-        @media screen and (max-width: 600px) {
-            .container {
-                margin: 80px 5px 20px; /* Reduced side margins on small screens */
-                width: calc(100% - 10px); /* Full width minus padding */
-            }
-
-            .back-button {
-                top: 10px;
-                left: 10px;
-                padding: 8px 16px;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="back-button">
-        <a href="index.html">Home</a>
+      <a href="index.html">Home</a>
     </div>
     <div class="container">
-        <h1><img src="img/logo-v4-no-tag.png" width="200"></h1>
-        <h1>Race Control Instructions</h1>
-        <p>Welcome to RKRC Race Control! This tool helps manage RC racing events with or without a steward. Below are instructions on how to use the program.</p>
-        
-        <h2>Getting Started</h2>
-        <ul>
-            <li><strong>Choose Mode:</strong> From the home page, select "Race with a Steward" for controlled races or "Race without a Steward" for automated flag clearing with random delays.</li>
-            <li><strong>Set Race Duration:</strong> Select the desired race time from the dropdown menu before starting the race.</li>
-            <li><strong>Practice Mode:</strong> Practice mode will not have a countdown but flags still work.</li>
-            <li><strong>Set Race Announcer:</strong> Select the desired announcer from the dropdown menu before starting the race.</li>
-            <li><strong>Start the Race:</strong> Click the "Start Race" button to begin. You’ll hear "Start your engines" followed by 4 beeps, and a final start beep signals the race start.</li>
-        </ul>
-        
-        <h2>During the Race</h2>
-        <ul>
-            <li><strong>Timer:</strong> The countdown timer displays the remaining race time. Audio cues play at key intervals (e.g., every minute and at 30 seconds remaining).</li>
-            <li><strong>Yellow Flag:</strong> Click "Yellow Flag" to signal caution (background turns yellow). Click "Clear Yellow Flag" to return to green. In "No Steward" mode, clearing has a random delay of 3-6 seconds after a "Get Ready" sound.</li>
-            <li><strong>Red Flag:</strong> Click "Red Flag" to stop the race (background turns red, timer pauses). Click "Clear Red Flag" to resume. In "No Steward" mode, clearing has a random delay of 3-6 seconds after a "Get Ready" sound.</li>
-        </ul>
-        
-        <h2>Ending or Restarting</h2>
-        <ul>
-            <li><strong>Race End:</strong> When the timer reaches 0, the race ends with a final sound, and a checkerboard background appears.</li>
-            <li><strong>Restart:</strong> Click "Restart" at any time to reset the race or to start a new race.</li>
-            <li><strong>Home:</strong> Click "Home" at any time to <strong>stop everything</strong> and take you back to the main menu.</li>
-        </ul>
-        
-        <h2>Additional Notes</h2>
-        <ul>
-            <li>For races without a steward, the random delay in clearing flags adds unpredictability to simulate a real race steward.</li>
-            <li>For races with a steward, the steward will determine when the flag goes green.</li>
-            <li>Your device's screen will stay on while a race is running so be sure to have a good charge.</li>
-            <li>Ensure your device volume is on to hear audio cues.</li>
-            <li>At the end of each race a summary of flags thrown will be displayed.</li>
-            <li>If you have questions, contact the race organizer.</li>
-        </ul>
+      <h1><img src="img/logo-v4-no-tag.png" width="200"></h1>
+      <h1>Race Control Instructions</h1>
+      <p>
+        Welcome to RKRC Race Control! This tool helps manage RC racing events
+        with or without a steward. Below are instructions on how to use the
+        program.
+      </p>
+
+      <h2>Getting Started</h2>
+      <ul>
+        <li>
+          <strong>Choose Mode:</strong> From the home page, select "Race with a
+          Steward" for controlled races or "Race without a Steward" for
+          automated flag clearing with random delays.
+        </li>
+        <li>
+          <strong>Set Race Duration:</strong> Select the desired race time from
+          the dropdown menu before starting the race.
+        </li>
+        <li>
+          <strong>Practice Mode:</strong> Practice mode will not have a
+          countdown but flags still work.
+        </li>
+        <li>
+          <strong>Set Race Announcer:</strong> Select the desired announcer from
+          the dropdown menu before starting the race.
+        </li>
+        <li>
+          <strong>Start the Race:</strong> Click the "Start Race" button to
+          begin. You’ll hear "Start your engines" followed by 4 beeps, and a
+          final start beep signals the race start.
+        </li>
+      </ul>
+
+      <h2>During the Race</h2>
+      <ul>
+        <li>
+          <strong>Timer:</strong> The countdown timer displays the remaining
+          race time. Audio cues play at key intervals (e.g., every minute and at
+          30 seconds remaining).
+        </li>
+        <li>
+          <strong>Yellow Flag:</strong> Click "Yellow Flag" to signal caution
+          (background turns yellow). Click "Clear Yellow Flag" to return to
+          green. In "No Steward" mode, clearing has a random delay of 3-6
+          seconds after a "Get Ready" sound.
+        </li>
+        <li>
+          <strong>Red Flag:</strong> Click "Red Flag" to stop the race
+          (background turns red, timer pauses). Click "Clear Red Flag" to
+          resume. In "No Steward" mode, clearing has a random delay of 3-6
+          seconds after a "Get Ready" sound.
+        </li>
+      </ul>
+
+      <h2>Ending or Restarting</h2>
+      <ul>
+        <li>
+          <strong>Race End:</strong> When the timer reaches 0, the race ends
+          with a final sound, and a checkerboard background appears.
+        </li>
+        <li>
+          <strong>Restart:</strong> Click "Restart" at any time to reset the
+          race or to start a new race.
+        </li>
+        <li>
+          <strong>Home:</strong> Click "Home" at any time to <strong>stop
+            everything</strong> and take you back to the main menu.
+        </li>
+      </ul>
+
+      <h2>Additional Notes</h2>
+      <ul>
+        <li>
+          For races without a steward, the random delay in clearing flags adds
+          unpredictability to simulate a real race steward.
+        </li>
+        <li>
+          For races with a steward, the steward will determine when the flag
+          goes green.
+        </li>
+        <li>
+          Your device's screen will stay on while a race is running so be sure
+          to have a good charge.
+        </li>
+        <li>Ensure your device volume is on to hear audio cues.</li>
+        <li>
+          At the end of each race a summary of flags thrown will be displayed.
+        </li>
+        <li>If you have questions, contact the race organizer.</li>
+      </ul>
     </div>
     <div class="footer">
-        <a href="https://rkrc.club" target="_blank">RKRC </a>- Code available on <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank">GitHub</a>        
+      <a href="https://rkrc.club" target="_blank">RKRC </a>- Code available on
+      <a href="https://github.com/ltkermit/rkrc-race-control" target="_blank"
+      >GitHub</a>
     </div>
-</body>
+  </body>
 </html>
