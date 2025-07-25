@@ -59,7 +59,7 @@ function updateAudioSources() {
   voiceAudioIds.forEach(audioId => {
     const audioElement = document.getElementById(audioId);
     if (audioElement) {
-      let basePath = 'audio/';
+      let basePath = './audio/';
       let prefix = '';
 
       if (selectedVoice === 'america') {

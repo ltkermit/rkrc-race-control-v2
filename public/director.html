@@ -174,15 +174,15 @@
     </audio>
 
     <script src="js/noSleep.min.js"></script>
-    <script src="js/raceLogic.js"></script>
-    <script src="js/audioManager.js"></script>
-    <script src="js/uiController.js"></script>
-    <script src="js/websocket-client.js"></script>
-    <script src="js/script.js"></script>
+    <script type="module" src="js/raceLogic.js"></script>
+    <script type="module" src="js/audioManager.js"></script>
+    <script type="module" src="js/uiController.js"></script>
+    <script type="module" src="js/websocket-client.js"></script>
+    <script type="module" src="js/script.js"></script>
     <script>
       console.log("Loading director-integration.js");
     </script>
-    <script src="js/director-integration.js"></script>
+    <script type="module" src="js/director-integration.js"></script>
     <script>
       console.log("director-integration.js loaded, initializing WebSocket");
       if (typeof raceWebSocket !== 'undefined') {
