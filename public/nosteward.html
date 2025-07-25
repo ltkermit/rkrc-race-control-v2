@@ -73,9 +73,9 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-        <button class="start" id="startRace" disabled>Start Race</button>
-      </div>
-      <div class="practice-mode-section">
+            <button class="start" id="startRace" disabled onclick="window.startRaceFallback()">Start Race</button>
+        </div>
+        <div class="practice-mode-section">
         <label for="practiceMode" class="practice-checkbox-label">
           <input type="checkbox" id="practiceMode">
           Practice Mode
@@ -169,5 +169,28 @@
     <script type="module" src="js/audioManager.js"></script>
     <script type="module" src="js/uiController.js"></script>
     <script type="module" src="js/script.js"></script>
+    <script>
+      // Fallback function for Start Race button click
+      window.startRaceFallback = function() {
+        console.log("Fallback Start Race button clicked");
+        if (window.startRace) {
+          window.startRace();
+          if (window.startRaceSequence) {
+            window.startRaceSequence(window.playAudio, window.showCountdown, window.preloadCriticalAudio);
+          }
+          try {
+            if (window.noSleep) {
+              window.noSleep.enable();
+              console.log("Screen wake lock enabled via fallback");
+            }
+          } catch (e) {
+            console.error("Failed to enable screen wake lock via fallback:", e);
+          }
+        } else {
+          console.error("startRace function not found in fallback");
+        }
+      };
+      console.log("Fallback Start Race function defined");
+    </script>
 </body>
 </html>
