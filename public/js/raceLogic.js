@@ -310,21 +310,38 @@ function restartRace() {
 // Initialize event listeners
 function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalAudio) {
   console.log("Initializing race logic event listeners");
-  if (startRaceBtn) {
-    startRaceBtn.addEventListener('click', () => {
-      console.log("Start Race button clicked");
-      startRace();
-      try {
-        noSleep.enable();
-        console.log("Screen wake lock enabled");
-      } catch (e) {
-        console.error("Failed to enable screen wake lock:", e);
+  
+  // Function to attach start race listener with retry if element not found
+  function attachStartRaceListener() {
+    if (startRaceBtn) {
+      startRaceBtn.addEventListener('click', () => {
+        console.log("Start Race button clicked");
+        startRace();
+        try {
+          noSleep.enable();
+          console.log("Screen wake lock enabled");
+        } catch (e) {
+          console.error("Failed to enable screen wake lock:", e);
+        }
+        startRaceSequence(playAudio, showCountdown, preloadCriticalAudio);
+      });
+      console.log("Start Race button listener attached");
+      return true;
+    } else {
+      console.error("Start Race button not found in DOM, retrying...");
+      return false;
+    }
+  }
+
+  // Initial attempt to attach listener
+  if (!attachStartRaceListener()) {
+    // Retry after a short delay if element not found
+    setTimeout(() => {
+      console.log("Retrying to attach Start Race listener");
+      if (!attachStartRaceListener()) {
+        console.error("Failed to attach Start Race listener after retry");
       }
-      startRaceSequence(playAudio, showCountdown, preloadCriticalAudio);
-    });
-    console.log("Start Race button listener attached");
-  } else {
-    console.error("Start Race button not found in DOM");
+    }, 1000);
   }
 
   if (yellowFlagBtn) {
