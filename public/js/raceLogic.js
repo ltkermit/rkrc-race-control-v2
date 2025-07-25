@@ -23,7 +23,7 @@ const redFlagBtn = document.getElementById('redFlag');
 const restartBtn = document.getElementById('restart');
 
 // Function to start the race
- function startRace() {
+function startRace() {
   // Set up timing based on mode
   if (isPracticeMode) {
     totalSeconds = 0; // Start from 0 for practice mode
@@ -43,9 +43,62 @@ const restartBtn = document.getElementById('restart');
   redFlagBtn.disabled = false;
   restartBtn.disabled = false;
   resetFlagCounts();
+}
 
-  isRunning = true;
-  startTimer();
+// Function to handle the start sequence with audio and countdown
+function startRaceSequence(playAudio, showCountdown, preloadCriticalAudio) {
+  playAudio('startEnginesSound', 'Start Your Engines!');
+  preloadCriticalAudio();
+
+  // Step 1: Wait 3 seconds before starting the beep sequence
+  setTimeout(() => {
+    // Step 2: Play beep.mp3 every 1.5 seconds for 4 times with countdown
+    let beepCount = 0;
+    const playNextBeep = () => {
+      if (beepCount < 4) {
+        try {
+          console.log(`Playing beep ${beepCount + 1}/4`);
+          showCountdown(4 - beepCount);
+          playAudio('beepSound').then(() => {
+            beepCount++;
+            setTimeout(playNextBeep, 1000);
+          }).catch(e => {
+            console.error("Audio play error for beep:", e);
+            beepCount++;
+            setTimeout(playNextBeep, 1000);
+          });
+        } catch (e) {
+          console.error("Beep sound failed:", e);
+          beepCount++;
+          setTimeout(playNextBeep, 1000);
+        }
+      } else {
+        // Step 3: Wait random 2-3 seconds after last beep
+        const randomFinalDelay = Math.floor(Math.random() * 1000) + 2000; // Random delay between 2000-3000ms (2-3 seconds)
+        setTimeout(() => {
+          // Step 4: Play start-beep.mp3, show "GO!" and start the timer
+          try {
+            console.log("Playing start-beep and starting timer");
+            showCountdown('GO!', true);
+            playAudio('startBeepSound', 'GO!').catch(e => {
+              console.error("Audio play error for start-beep:", e);
+              // Retry once if it fails
+              setTimeout(() => {
+                console.log("Retrying start-beep playback");
+                playAudio('startBeepSound').catch(retryError => console.error("Retry failed for start-beep:", retryError));
+              }, 500);
+            });
+          } catch (e) {
+            console.error("Start-beep sound failed:", e);
+          }
+          isRunning = true;
+          updateBackgroundColor(); // Update background when race starts
+          startTimer();
+        }, randomFinalDelay);
+      }
+    };
+    playNextBeep(); // Start the beep sequence
+  }, 3000); // Initial 3-second delay
 }
 
 // Timer logic
@@ -255,7 +308,7 @@ function restartRace() {
 }
 
 // Initialize event listeners
-function initializeRaceLogic(noSleep) {
+function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalAudio) {
   console.log("Initializing race logic event listeners");
   if (startRaceBtn) {
     startRaceBtn.addEventListener('click', () => {
@@ -267,6 +320,7 @@ function initializeRaceLogic(noSleep) {
       } catch (e) {
         console.error("Failed to enable screen wake lock:", e);
       }
+      startRaceSequence(playAudio, showCountdown, preloadCriticalAudio);
     });
     console.log("Start Race button listener attached");
   } else {
@@ -274,14 +328,20 @@ function initializeRaceLogic(noSleep) {
   }
 
   if (yellowFlagBtn) {
-    yellowFlagBtn.addEventListener('click', toggleYellowFlag);
+    yellowFlagBtn.addEventListener('click', () => {
+      const audioId = toggleYellowFlag();
+      playAudio(audioId, audioId === 'yellowOnSound' ? 'Yellow Flag Thrown' : 'Yellow Flag Cleared', 2000);
+    });
     console.log("Yellow Flag button listener attached");
   } else {
     console.error("Yellow Flag button not found in DOM");
   }
 
   if (redFlagBtn) {
-    redFlagBtn.addEventListener('click', toggleRedFlag);
+    redFlagBtn.addEventListener('click', () => {
+      const audioId = toggleRedFlag();
+      playAudio(audioId, audioId === 'redOnSound' ? 'Red Flag Thrown' : 'Red Flag Cleared', 2000);
+    });
     console.log("Red Flag button listener attached");
   } else {
     console.error("Red Flag button not found in DOM");
@@ -296,6 +356,7 @@ function initializeRaceLogic(noSleep) {
       } catch (e) {
         console.error("Failed to disable screen wake lock on restart:", e);
       }
+      playAudio('restartSound', 'Race Restarted', 2000);
     });
     console.log("Restart button listener attached");
   } else {
