@@ -73,7 +73,9 @@
           <option value="9">9</option>
           <option value="10">10</option>
         </select>
-            <button class="start" id="startRace" disabled onclick="window.startRaceFallback()">Start Race</button>
+            <button class="start" id="startRace" disabled onclick="window.startRaceFallback(event)" style="z-index: 1000; position: relative; pointer-events: auto;">Start Race</button>
+            <!-- Debug button to test click functionality -->
+            <button id="debugStartRace" style="margin-top: 10px; z-index: 1000; position: relative; pointer-events: auto;" onclick="window.startRaceFallback(event)">Debug Start Race</button>
         </div>
         <div class="practice-mode-section">
         <label for="practiceMode" class="practice-checkbox-label">
@@ -171,16 +173,16 @@
     <script type="module" src="js/script.js"></script>
     <script>
       // Fallback function for Start Race button click
-      window.startRaceFallback = function() {
-        console.log("Fallback Start Race button clicked");
+      window.startRaceFallback = function(event) {
+        console.log("Fallback Start Race button clicked", event.type);
         if (window.startRace) {
           window.startRace();
           if (window.startRaceSequence) {
             window.startRaceSequence(window.playAudio, window.showCountdown, window.preloadCriticalAudio);
           }
           try {
-            if (window.noSleep) {
-              window.noSleep.enable();
+            if (window._noSleep) {
+              window._noSleep.enable();
               console.log("Screen wake lock enabled via fallback");
             }
           } catch (e) {
@@ -190,7 +192,28 @@
           console.error("startRace function not found in fallback");
         }
       };
-      console.log("Fallback Start Race function defined");
+      // Ensure button is enabled after load
+      globalThis.addEventListener('DOMContentLoaded', () => {
+        const startBtn = document.getElementById('startRace');
+        if (startBtn) {
+          startBtn.disabled = false;
+          console.log("Start Race button explicitly enabled after DOM load");
+          // Add mousedown event as fallback
+          startBtn.addEventListener('mousedown', (e) => {
+            console.log("Mousedown event on Start Race button", e);
+            window.startRaceFallback(e);
+          });
+          console.log("Mousedown listener added to Start Race button");
+        } else {
+          console.error("Start Race button still not found after DOM load");
+        }
+        const debugBtn = document.getElementById('debugStartRace');
+        if (debugBtn) {
+          debugBtn.disabled = false;
+          console.log("Debug Start Race button enabled");
+        }
+      });
+      console.log("Fallback Start Race function defined with enhanced debugging");
     </script>
 </body>
 </html>
