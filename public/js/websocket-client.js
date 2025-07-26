@@ -14,14 +14,14 @@ class RaceWebSocket {
     this.savedName = null; // Store name for reconnection
   }
 
-  async connect(isDirector = false, name = "Anonymous", password = null) {
+  connect(isDirector = false, name = "Anonymous", password = null) {
     this.isDirector = isDirector;
     this.savedPassword = password;
     this.savedName = name;
 
     // Determine WebSocket URL
-    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = window.location.host;
+    const protocol = globalThis.location.protocol === "https:" ? "wss:" : "ws:";
+    const host = globalThis.location.host;
     const wsUrl = `${protocol}//${host}?director=${isDirector}&name=${
       encodeURIComponent(name)
     }`;
@@ -248,8 +248,11 @@ class RaceWebSocket {
   }
 }
 
-// Create global instance
+// Create global instance and expose it to globalThis for inline script access
+console.log("Creating global raceWebSocket instance");
 const raceWebSocket = new RaceWebSocket();
+globalThis.raceWebSocket = raceWebSocket;
+console.log("raceWebSocket exposed to globalThis");
 
 // Event handler placeholders (to be overridden by implementing pages)
 // These provide documentation of available events:

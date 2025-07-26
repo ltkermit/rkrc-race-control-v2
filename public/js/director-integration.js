@@ -17,22 +17,35 @@
 
   // Disable all controls initially
   function disableAllControls() {
-    startRaceBtn.disabled = true;
-    yellowFlagBtn.disabled = true;
-    redFlagBtn.disabled = true;
-    restartBtn.disabled = true;
-    raceTimeSelect.disabled = true;
+    const startRaceBtn = document.getElementById("startRace");
+    const yellowFlagBtn = document.getElementById("yellowFlag");
+    const redFlagBtn = document.getElementById("redFlag");
+    const restartBtn = document.getElementById("restart");
+    const raceTimeSelect = document.getElementById("raceTime");
+    const practiceModeCheckbox = document.getElementById("practiceMode");
+    const voiceSelect = document.getElementById("voiceSelect");
+
+    if (startRaceBtn) startRaceBtn.disabled = true;
+    if (yellowFlagBtn) yellowFlagBtn.disabled = true;
+    if (redFlagBtn) redFlagBtn.disabled = true;
+    if (restartBtn) restartBtn.disabled = true;
+    if (raceTimeSelect) raceTimeSelect.disabled = true;
     if (practiceModeCheckbox) practiceModeCheckbox.disabled = true;
-    voiceSelect.disabled = true;
+    if (voiceSelect) voiceSelect.disabled = true;
     console.log("All controls disabled until authentication");
   }
 
   // Enable controls after authentication
   function enableControls() {
-    startRaceBtn.disabled = false;
-    raceTimeSelect.disabled = false;
+    const startRaceBtn = document.getElementById("startRace");
+    const raceTimeSelect = document.getElementById("raceTime");
+    const practiceModeCheckbox = document.getElementById("practiceMode");
+    const voiceSelect = document.getElementById("voiceSelect");
+
+    if (startRaceBtn) startRaceBtn.disabled = false;
+    if (raceTimeSelect) raceTimeSelect.disabled = false;
     if (practiceModeCheckbox) practiceModeCheckbox.disabled = false;
-    voiceSelect.disabled = false;
+    if (voiceSelect) voiceSelect.disabled = false;
     // Flag buttons remain disabled until race starts
     console.log("Controls enabled after successful authentication");
   }
@@ -223,6 +236,7 @@
   };
 
   // Override start race to broadcast
+  const startRaceBtn = document.getElementById("startRace");
   if (startRaceBtn) {
     startRaceBtn.addEventListener("click", function () {
       console.log("Start Race clicked, waiting for race to start for broadcast");
@@ -271,6 +285,7 @@
   };
 
   // Flag controls broadcasting
+  const yellowFlagBtn = document.getElementById("yellowFlag");
   if (yellowFlagBtn) {
     yellowFlagBtn.addEventListener("click", function () {
       // Wait for flag state to update
@@ -287,6 +302,7 @@
     });
   }
 
+  const redFlagBtn = document.getElementById("redFlag");
   if (redFlagBtn) {
     redFlagBtn.addEventListener("click", function () {
       // Wait for flag state to update
@@ -305,6 +321,7 @@
   }
 
   // Voice change broadcasting
+  const voiceSelect = document.getElementById("voiceSelect");
   if (voiceSelect) {
     voiceSelect.addEventListener("change", function () {
       if (raceWebSocket.isReady()) {
@@ -336,6 +353,7 @@
   };
 
   // Restart broadcasting
+  const restartBtn = document.getElementById("restart");
   if (restartBtn) {
     restartBtn.addEventListener("click", function () {
       setTimeout(() => {
