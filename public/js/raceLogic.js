@@ -109,12 +109,14 @@ function startTimer() {
         // Count up in practice mode
         secondsLeft++;
         updateTimerDisplay();
+        console.log(`Practice mode: secondsLeft incremented to ${secondsLeft}`);
         // No end condition in practice mode
       } else {
         // Normal countdown mode
         if (secondsLeft > 0) {
           secondsLeft--;
           updateTimerDisplay();
+          console.log(`Countdown mode: secondsLeft decremented to ${secondsLeft}`);
           checkTimeMarks();
         } else if (secondsLeft <= 0) {
           clearInterval(timerInterval);
@@ -122,10 +124,14 @@ function startTimer() {
           updateBackgroundColor();
           disableButtons();
           displayFlagCounts();
+          console.log('Race ended: timer stopped');
         }
       }
+    } else {
+      console.log('Timer interval running but race is not active');
     }
   }, 1000);
+  console.log('Timer started');
 }
 
 // Update timer display
