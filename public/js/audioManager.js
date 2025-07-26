@@ -280,6 +280,7 @@ function initializeAudioManager() {
 
 // Play audio with fallback to visual notification
 function playAudio(audioId, notificationMessage = null, durationMs = 3000) {
+  console.log(`playAudio called with audioId: ${audioId}`);
   return playAudioWithRetry(audioId).catch(e => {
     console.error(`Failed to play ${audioId} after retries:`, e);
     if (notificationMessage) {

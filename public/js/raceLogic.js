@@ -144,16 +144,20 @@ function checkTimeMarks() {
   const currentMinute = Math.floor(secondsLeft / 60);
   const currentSecond = secondsLeft % 60;
 
+  console.log(`checkTimeMarks: secondsLeft=${secondsLeft}, currentMinute=${currentMinute}, currentSecond=${currentSecond}, lastMinutePlayed=${lastMinutePlayed}, hasPlayed30Seconds=${hasPlayed30Seconds}`);
+
   // Check for minute marks (play specific minute audio when seconds hit 0)
   // Do not play at the start of the race (when secondsLeft equals totalSeconds)
   if (currentMinute !== lastMinutePlayed && currentSecond === 0 && currentMinute > 0 && secondsLeft < totalSeconds) {
     lastMinutePlayed = currentMinute;
+    console.log(`Playing minute mark audio: ${currentMinute}-minute`);
     return `${currentMinute}-minute`;
   }
 
   // Check for 30-second mark
   if (secondsLeft === 30 && !hasPlayed30Seconds) {
     hasPlayed30Seconds = true;
+    console.log('Playing 30-seconds audio');
     return '30-seconds';
   }
   return null;

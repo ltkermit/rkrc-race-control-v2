@@ -39,7 +39,10 @@ function setupTimerChecks() {
     const audioId = checkTimeMarks();
     if (audioId) {
       const message = audioId === '30-seconds' ? '30 Seconds Left' : `${audioId.split('-')[0]} Minute(s) Left`;
+      console.log(`Attempting to play audio for time mark: ${audioId}`);
       playAudio(audioId, message, 3000);
+    } else {
+      console.log('No audio ID returned from checkTimeMarks');
     }
   }, 1000);
 }
