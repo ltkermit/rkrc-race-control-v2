@@ -70,6 +70,7 @@ function updateAudioSources() {
         basePath += 'merica/';
         prefix = 'n-';
       }
+      console.log(`Base path for audio set to: ${basePath}`);
 
       // Extract the base filename from the current src or a default
       let baseName = audioId.replace('Sound', '').toLowerCase();

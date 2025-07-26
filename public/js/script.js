@@ -35,16 +35,9 @@ function startRaceSequence(_playAudio, _showCountdown, _preloadCriticalAudio) {
 
 // Timer check for audio cues
 function setupTimerChecks() {
-  const _interval = setInterval(() => {
-    const audioId = checkTimeMarks();
-    if (audioId) {
-      const message = audioId === '30-seconds' ? '30 Seconds Left' : `${audioId.split('-')[0]} Minute(s) Left`;
-      console.log(`Attempting to play audio for time mark: ${audioId}`);
-      playAudio(audioId, message, 3000);
-    } else {
-      console.log('No audio ID returned from checkTimeMarks');
-    }
-  }, 1000);
+  // This function is no longer needed as checkTimeMarks is called within startTimer in raceLogic.js
+  console.log("setupTimerChecks is deprecated as checkTimeMarks is handled in raceLogic.js");
+  // Kept for potential future use or debugging
 }
 
 // Initialize the application when the DOM is fully loaded

@@ -117,7 +117,12 @@ function startTimer() {
           secondsLeft--;
           updateTimerDisplay();
           console.log(`Countdown mode: secondsLeft decremented to ${secondsLeft}`);
-          checkTimeMarks();
+          const audioId = checkTimeMarks();
+          if (audioId) {
+            const message = audioId === '30-seconds' ? '30 Seconds Left' : `${audioId.split('-')[0]} Minute(s) Left`;
+            console.log(`Attempting to play audio for time mark: ${audioId}`);
+            globalThis.playAudio(audioId, message, 3000);
+          }
         } else if (secondsLeft <= 0) {
           clearInterval(timerInterval);
           isRunning = false;
@@ -125,6 +130,7 @@ function startTimer() {
           disableButtons();
           displayFlagCounts();
           console.log('Race ended: timer stopped');
+          globalThis.playAudio('endSound', 'Race Ended', 3000);
         }
       }
     } else {
