@@ -15,6 +15,7 @@
         display: flex;
         flex-direction: column;
         font-family: Arial, sans-serif;
+        overflow-y: auto;
       }
 
       .back-button {
@@ -34,13 +35,13 @@
       .container {
         width: 90%; /* Fills most of the screen on small devices */
         max-width: 800px; /* Limits width on larger screens */
-        margin: 80px auto
-          20px; /* Top margin to avoid overlap with back button */
+        margin: 60px auto 20px; /* Reduced top margin to ensure visibility */
         padding: 20px;
         text-align: left;
         background-color: #f9f9f9;
         border-radius: 8px;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        overflow-y: auto; /* Allow scrolling if content overflows */
       }
 
       h1 {
@@ -57,7 +58,7 @@
       /* Responsive adjustments */
       @media screen and (max-width: 600px) {
         .container {
-          margin: 80px 5px 20px; /* Reduced side margins on small screens */
+          margin: 50px 5px 20px; /* Further reduced top margin on small screens */
           width: calc(100% - 10px); /* Full width minus padding */
         }
 
@@ -82,7 +83,7 @@
         program.
       </p>
 
-      <h2>Getting Started</h2>
+      <h2>Getting Started - Single Device Mode</h2>
       <ul>
         <li>
           <strong>Choose Mode:</strong> From the home page, select "Race with a
@@ -94,11 +95,10 @@
           the dropdown menu before starting the race.
         </li>
         <li>
-          <strong>Practice Mode:</strong> Practice mode will not have a
-          countdown but flags still work.
+          <strong>Practice Mode:</strong> Enable Practice Mode to run a race without a countdown timer; flags will still work.
         </li>
         <li>
-          <strong>Set Race Announcer:</strong> Select the desired announcer from
+          <strong>Set Race Announcer:</strong> Select the desired announcer voice from
           the dropdown menu before starting the race.
         </li>
         <li>
@@ -108,12 +108,27 @@
         </li>
       </ul>
 
-      <h2>During the Race</h2>
+      <h2>Getting Started - Multi-Device Mode (Beta)</h2>
+      <ul>
+        <li>
+          <strong>Choose Multi-Device Mode:</strong> From the home page, select "Race Director" to control the race or "Spectator View" to observe the race status in real-time across multiple devices.
+        </li>
+        <li>
+          <strong>Race Director Setup:</strong> As a director, you'll need to authenticate with a password (provided by the race organizer) when accessing the "Race Director" page. Once authenticated, you can control the race similar to single-device mode, and your actions will be broadcast to all connected spectators.
+        </li>
+        <li>
+          <strong>Spectator Setup:</strong> As a spectator, select "Spectator View" and enter a name (optional). You'll see the race status, timer, and flags in real-time as updated by the director. You can toggle audio announcements on or off.
+        </li>
+        <li>
+          <strong>Connection Status:</strong> Both directors and spectators will see a connection status bar at the top of the page indicating if they are connected and, for directors, if they are authenticated.
+        </li>
+      </ul>
+
+      <h2>During the Race - Single Device Mode</h2>
       <ul>
         <li>
           <strong>Timer:</strong> The countdown timer displays the remaining
-          race time. Audio cues play at key intervals (e.g., every minute and at
-          30 seconds remaining).
+          race time. Audio cues play at key intervals (e.g., every minute starting from 1 minute, and at 30 seconds remaining).
         </li>
         <li>
           <strong>Yellow Flag:</strong> Click "Yellow Flag" to signal caution
@@ -129,19 +144,32 @@
         </li>
       </ul>
 
+      <h2>During the Race - Multi-Device Mode (Beta)</h2>
+      <ul>
+        <li>
+          <strong>Race Director Control:</strong> Directors control the race as in single-device mode. Actions like starting the race, toggling flags, or changing announcer voice are broadcast to all connected spectators in real-time.
+        </li>
+        <li>
+          <strong>Spectator View:</strong> Spectators see the race timer, flag status, and background color updates synchronized with the director's actions. Audio announcements can be enabled or disabled via a checkbox.
+        </li>
+        <li>
+          <strong>Connected Devices:</strong> Directors can see a list of connected devices (spectators and themselves) to monitor participation.
+        </li>
+      </ul>
+
       <h2>Ending or Restarting</h2>
       <ul>
         <li>
           <strong>Race End:</strong> When the timer reaches 0, the race ends
-          with a final sound, and a checkerboard background appears.
+          with a final sound, and a checkerboard background appears. In multi-device mode, this is synchronized across all connected devices.
         </li>
         <li>
           <strong>Restart:</strong> Click "Restart" at any time to reset the
-          race or to start a new race.
+          race or to start a new race. In multi-device mode, this action by the director resets the state for all spectators.
         </li>
         <li>
           <strong>Home:</strong> Click "Home" at any time to <strong>stop
-            everything</strong> and take you back to the main menu.
+            everything</strong> and take you back to the main menu. Note: In multi-device mode, directors leaving the page may disrupt the race for spectators.
         </li>
       </ul>
 
@@ -156,12 +184,15 @@
           goes green.
         </li>
         <li>
-          Your device's screen will stay on while a race is running so be sure
+          In multi-device mode, ensure a stable internet connection for real-time synchronization between director and spectators.
+        </li>
+        <li>
+          Your device's screen will stay on while a race is running, so be sure
           to have a good charge.
         </li>
-        <li>Ensure your device volume is on to hear audio cues.</li>
+        <li>Ensure your device volume is on to hear audio cues, especially for spectators who have enabled audio announcements.</li>
         <li>
-          At the end of each race a summary of flags thrown will be displayed.
+          At the end of each race, a summary of flags thrown will be displayed.
         </li>
         <li>If you have questions, contact the race organizer.</li>
       </ul>
