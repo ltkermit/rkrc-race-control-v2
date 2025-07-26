@@ -145,7 +145,8 @@ function checkTimeMarks() {
   const currentSecond = secondsLeft % 60;
 
   // Check for minute marks (play specific minute audio when seconds hit 0)
-  if (currentMinute !== lastMinutePlayed && currentSecond === 0 && currentMinute > 0) {
+  // Do not play at the start of the race (when secondsLeft equals totalSeconds)
+  if (currentMinute !== lastMinutePlayed && currentSecond === 0 && currentMinute > 0 && secondsLeft < totalSeconds) {
     lastMinutePlayed = currentMinute;
     return `${currentMinute}-minute`;
   }
