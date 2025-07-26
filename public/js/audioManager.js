@@ -47,7 +47,6 @@ const voiceAudioIds = [
   '7-minute',
   '8-minute',
   '9-minute',
-  '10-minute',
   'getReadySound',
 ];
 

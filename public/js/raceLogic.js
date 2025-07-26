@@ -61,20 +61,20 @@ function startRaceSequence(playAudio, showCountdown, preloadCriticalAudio) {
           showCountdown(4 - beepCount);
           playAudio('beepSound').then(() => {
             beepCount++;
-            setTimeout(playNextBeep, 1000);
+            setTimeout(playNextBeep, 1500);
           }).catch(e => {
             console.error("Audio play error for beep:", e);
             beepCount++;
-            setTimeout(playNextBeep, 1000);
+            setTimeout(playNextBeep, 1500);
           });
         } catch (e) {
           console.error("Beep sound failed:", e);
           beepCount++;
-          setTimeout(playNextBeep, 1000);
+          setTimeout(playNextBeep, 1500);
         }
       } else {
         // Step 3: Wait random 2-3 seconds after last beep
-        const randomFinalDelay = Math.floor(Math.random() * 1000) + 2000; // Random delay between 2000-3000ms (2-3 seconds)
+        const randomFinalDelay = Math.floor(Math.random() * 1000) + 3000; // Random delay between 2000-3000ms (2-3 seconds)
         setTimeout(() => {
           // Step 4: Play start-beep.mp3, show "GO!" and start the timer
           try {
