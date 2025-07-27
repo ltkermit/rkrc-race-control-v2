@@ -299,6 +299,17 @@
     }
   };
 
+  // Additional safety: Force timer sync every 2 seconds if race is running
+  setInterval(() => {
+    if (isRunning && raceWebSocket.isReady()) {
+      raceWebSocket.send({
+        type: "timer-sync",
+        secondsLeft: secondsLeft,
+      });
+      console.log("Forced timer sync sent to spectators:", secondsLeft);
+    }
+  }, 2000);
+
   // Flag controls broadcasting
   const yellowFlagBtn = document.getElementById("yellowFlag");
   if (yellowFlagBtn) {

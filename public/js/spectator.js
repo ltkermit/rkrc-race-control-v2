@@ -51,17 +51,45 @@ function updateTimerDisplay() {
   }:${seconds.toString().padStart(2, "0")}`;
 }
 
-// Play audio if enabled
+// Play audio if enabled, with workaround for user interaction requirement
+let audioQueue = [];
+let hasUserInteracted = false;
+
 function playAudio(audioId) {
   if (audioEnabled) {
     const audio = document.getElementById(audioId);
     if (audio) {
-      audio.play().catch((e) => {
-        console.error(`Failed to play ${audioId}:`, e);
-      });
+      if (hasUserInteracted) {
+        audio.play().catch((e) => {
+          console.error(`Failed to play ${audioId}:`, e);
+        });
+      } else {
+        console.log(`Queuing audio ${audioId} until user interaction`);
+        audioQueue.push(audioId);
+      }
+    } else {
+      console.warn(`Audio element for ${audioId} not found`);
     }
+  } else {
+    console.log(`Audio disabled, skipping play for ${audioId}`);
   }
 }
+
+// Detect user interaction to enable audio playback
+document.addEventListener('click', () => {
+  hasUserInteracted = true;
+  console.log("User interacted, processing queued audio");
+  while (audioQueue.length > 0) {
+    const queuedAudioId = audioQueue.shift();
+    const audio = document.getElementById(queuedAudioId);
+    if (audio) {
+      audio.play().catch((e) => {
+        console.error(`Failed to play queued ${queuedAudioId}:`, e);
+      });
+      console.log(`Played queued audio: ${queuedAudioId}`);
+    }
+  }
+}, { once: true });
 
 // Update voice sources
 function updateVoiceSources(voice) {
