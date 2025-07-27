@@ -292,10 +292,10 @@
     ) {
       lastSyncedSecond = secondsLeft;
       raceWebSocket.send({
-        type: "timer-update",
+        type: "timer-sync",
         secondsLeft: secondsLeft,
       });
-      console.log("Timer updated, sync sent:", secondsLeft);
+      console.log("Timer updated, sync sent to spectators:", secondsLeft);
     }
   };
 
@@ -307,11 +307,16 @@
       setTimeout(() => {
         if (raceWebSocket.isReady()) {
           raceWebSocket.send({
-            type: "flag-change",
+            type: "flag-update",
             flag: "yellow",
             active: isYellowFlag,
+            state: {
+              isYellowFlag: isYellowFlag,
+              isRedFlag: isRedFlag,
+              isRunning: isRunning
+            }
           });
-          console.log("Yellow flag state broadcasted:", isYellowFlag);
+          console.log("Yellow flag state broadcasted to spectators:", isYellowFlag);
         }
       }, 100);
     });
@@ -324,12 +329,16 @@
       setTimeout(() => {
         if (raceWebSocket.isReady()) {
           raceWebSocket.send({
-            type: "flag-change",
+            type: "flag-update",
             flag: "red",
             active: isRedFlag,
-            isRunning: isRunning,
+            state: {
+              isYellowFlag: isYellowFlag,
+              isRedFlag: isRedFlag,
+              isRunning: isRunning
+            }
           });
-          console.log("Red flag state broadcasted:", isRedFlag, "Running:", isRunning);
+          console.log("Red flag state broadcasted to spectators:", isRedFlag, "Running:", isRunning);
         }
       }, 100);
     });
