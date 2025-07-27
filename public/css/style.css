@@ -13,8 +13,8 @@ body {
 }
 
 .container {
-  width: 95%;
-  max-width: 800px;
+  width: 60%;
+  max-width: 500px;
   margin: auto auto 0;
   background: white;
   padding: 15px;
@@ -27,7 +27,7 @@ body {
 
 @media (max-width: 600px) {
   .container {
-    width: 98%;
+    width: 95%;
     padding: 10px;
     margin: 0 auto;
   }
