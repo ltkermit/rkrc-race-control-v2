@@ -241,18 +241,23 @@
     startRaceBtn.addEventListener("click", function () {
       console.log("Start Race clicked, waiting for race to start for broadcast");
       // Wait for the race to actually start (after countdown)
+      let attemptCount = 0;
+      const maxAttempts = 100; // Prevent infinite loop, roughly 10 seconds
       const checkRaceStart = setInterval(() => {
-        if (isRunning && raceWebSocket.isReady()) {
+        attemptCount++;
+        // Check if timer display indicates race is running (as a proxy for isRunning)
+        const timerText = document.getElementById("timer").textContent;
+        if (timerText !== "00:00" && timerText !== "PRACTICE" && raceWebSocket.isReady()) {
           clearInterval(checkRaceStart);
           raceWebSocket.send({
             type: "start-race",
             state: {
               isRunning: true,
-              isPracticeMode: isPracticeMode,
-              totalSeconds: totalSeconds,
-              secondsLeft: secondsLeft,
-              voice: voiceSelect.value,
-              raceTimeMinutes: parseInt(raceTimeSelect.value),
+              isPracticeMode: document.getElementById("practiceMode").checked,
+              totalSeconds: parseInt(document.getElementById("raceTime").value) * 60,
+              secondsLeft: parseInt(timerText.split(":")[0]) * 60 + parseInt(timerText.split(":")[1]),
+              voice: document.getElementById("voiceSelect").value,
+              raceTimeMinutes: parseInt(document.getElementById("raceTime").value),
               yellowFlagCount: 0,
               redFlagCount: 0,
               isYellowFlag: false,
@@ -260,6 +265,9 @@
             },
           });
           console.log("Race started, broadcasted state to clients");
+        } else if (attemptCount >= maxAttempts) {
+          clearInterval(checkRaceStart);
+          console.error("Timeout: Race start not detected after maximum attempts");
         }
       }, 100);
     });
