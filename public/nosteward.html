@@ -169,5 +169,17 @@
     <script type="module" src="js/audioManager.js"></script>
     <script type="module" src="js/uiController.js"></script>
     <script type="module" src="js/script.js"></script>
+    <script>
+      // Ensure Start Race button is enabled after DOM load
+      globalThis.addEventListener('DOMContentLoaded', () => {
+        const startBtn = document.getElementById('startRace');
+        if (startBtn) {
+          startBtn.disabled = false;
+          console.log("Start Race button enabled after DOM load");
+        } else {
+          console.error("Start Race button not found after DOM load");
+        }
+      });
+    </script>
 </body>
 </html>
