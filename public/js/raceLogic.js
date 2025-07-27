@@ -123,6 +123,14 @@ function startTimer() {
             console.log(`Attempting to play audio for time mark: ${audioId}`);
             globalThis.playAudio(audioId, message, 3000);
           }
+          // Send timer sync to spectators if WebSocket is available
+          if (typeof globalThis.raceWebSocket !== 'undefined' && globalThis.raceWebSocket.isReady()) {
+            globalThis.raceWebSocket.send({
+              type: "timer-sync",
+              secondsLeft: secondsLeft
+            });
+            console.log("Direct timer sync sent to spectators from raceLogic:", secondsLeft);
+          }
         } else if (secondsLeft <= 0) {
           clearInterval(timerInterval);
           isRunning = false;
@@ -277,6 +285,20 @@ function toggleYellowFlag() {
     console.log(`Yellow Flag thrown. Total count: ${yellowFlagCount}`);
   }
   updateBackgroundColor();
+  // Send flag update to spectators if WebSocket is available
+  if (typeof globalThis.raceWebSocket !== 'undefined' && globalThis.raceWebSocket.isReady()) {
+    globalThis.raceWebSocket.send({
+      type: "flag-update",
+      flag: "yellow",
+      active: isYellowFlag,
+      state: {
+        isYellowFlag: isYellowFlag,
+        isRedFlag: isRedFlag,
+        isRunning: isRunning
+      }
+    });
+    console.log("Direct yellow flag update sent to spectators:", isYellowFlag);
+  }
   return isYellowFlag ? 'yellowOnSound' : 'yellowOffSound';
 }
 
@@ -294,6 +316,20 @@ function toggleRedFlag() {
     redFlagBtn.textContent = 'Red Flag';
   }
   updateBackgroundColor();
+  // Send flag update to spectators if WebSocket is available
+  if (typeof globalThis.raceWebSocket !== 'undefined' && globalThis.raceWebSocket.isReady()) {
+    globalThis.raceWebSocket.send({
+      type: "flag-update",
+      flag: "red",
+      active: isRedFlag,
+      state: {
+        isYellowFlag: isYellowFlag,
+        isRedFlag: isRedFlag,
+        isRunning: isRunning
+      }
+    });
+    console.log("Direct red flag update sent to spectators:", isRedFlag, "Running:", isRunning);
+  }
   return isRedFlag ? 'redOnSound' : 'redOffSound';
 }
 
