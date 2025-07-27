@@ -311,8 +311,8 @@ function clearFlagWithDelayAndAudio(flagType, playAudio) {
     } else {
       console.warn("disableButtonsDuringDelay function not found");
     }
-    // Random delay between 2000-4000ms (2-4 seconds)
-    const delay = Math.floor(Math.random() * 2000) + 2000;
+    // Random delay between 3000-6000ms (3-6 seconds)
+    const delay = Math.floor(Math.random() * 3000) + 3000;
     console.log(`Delaying clear of ${flagType} flag by ${delay}ms`);
     setTimeout(() => {
       if (flagType === 'yellow') {
