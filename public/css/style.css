@@ -2,9 +2,8 @@
 body {
   font-family: Arial, sans-serif;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  flex-direction: column;
+  min-height: 100vh;
   margin: 0;
   background-color: #f0f0f0;
   position: relative;
@@ -14,13 +13,24 @@ body {
 }
 
 .container {
+  width: 95%;
   max-width: 800px;
-  margin: 0 auto;
+  margin: auto auto 0;
   background: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 600px) {
+  .container {
+    width: 98%;
+    padding: 10px;
+    margin: 0 auto;
+  }
 }
 
 h1 {
@@ -30,11 +40,23 @@ h1 {
   margin-bottom: 10px;
 }
 
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.5em;
+  }
+}
+
 h2 {
   color: #2f2bb2;
   font-size: 1.2em;
   margin-top: 0;
   margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+  h2 {
+    font-size: 1em;
+  }
 }
 
 p {
@@ -57,7 +79,7 @@ li {
 }
 
 button {
-  padding: 40px 20px;
+  padding: 15px 20px;
   margin: 5px;
   font-size: 14px;
   font-weight: bold;
@@ -65,6 +87,14 @@ button {
   border-radius: 5px;
   cursor: pointer;
   background-color: #007bff;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  button {
+    padding: 12px 16px;
+    font-size: 12px;
+  }
 }
 
 button:disabled {
@@ -76,14 +106,14 @@ button:disabled {
 .back-button {
   position: absolute;
   top: 45px;
-  left: 20px;
+  left: 10px;
 }
 
 .back-button a {
   display: inline-block;
-  padding: 10px 20px;
+  padding: 8px 16px;
   font-family: Arial, sans-serif;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   color: white;
   background-color: #007bff;
@@ -91,6 +121,19 @@ button:disabled {
   border-radius: 5px;
   text-decoration: none;
   transition: background-color 0.3s;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .back-button {
+    top: 10px;
+    left: 10px;
+  }
+
+  .back-button a {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
 }
 
 .back-button a:hover {
@@ -102,13 +145,23 @@ button:disabled {
   background-color: #007bff; /* Green background (adjust as needed) */
   border: none; /* Remove default button border */
   color: white; /* White text */
-  padding: 30px 15px; /* Padding around the text */
+  padding: 20px 10px; /* Padding around the text */
   text-decoration: none; /* Remove underline from link */
   cursor: pointer; /* Change cursor to a hand on hover */
   border-radius: 5px; /* Rounded corners (optional) */
-  font-size: 16px; /* Set font size */
-  margin: 15px; /* Add margin around each button */
-  width: 125px;
+  font-size: 14px; /* Set font size */
+  margin: 10px; /* Add margin around each button */
+  width: 110px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .race-selector {
+    padding: 15px 8px;
+    font-size: 12px;
+    margin: 5px;
+    width: 90px;
+  }
 }
 
 .race-selector:hover {
@@ -125,33 +178,59 @@ button:disabled {
 
 /* Race Control UI Elements */
 .settings {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 .settings label {
-  font-size: 18px;
-  margin-right: 10px;
+  font-size: 16px;
+  margin-right: 8px;
   color: #333;
 }
 
 .settings select {
   padding: 5px 10px;
-  font-size: 16px;
+  font-size: 14px;
   border-radius: 5px;
   border: 1px solid #ccc;
   background-color: white;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .settings {
+    margin-bottom: 10px;
+  }
+
+  .settings label {
+    font-size: 14px;
+    margin-right: 5px;
+  }
+
+  .settings select {
+    font-size: 12px;
+    padding: 3px 8px;
+  }
 }
 
 .start {
   padding: 10px 20px;
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: white;
   background-color: #28a745;
   border: none;
   border-radius: 5px;
   margin-left: 10px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .start {
+    padding: 8px 16px;
+    font-size: 16px;
+    margin-left: 5px;
+  }
 }
 
 .start:hover {
@@ -159,28 +238,51 @@ button:disabled {
 }
 
 .timer {
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
-  margin: 20px 0;
+  margin: 15px 0;
   color: #333;
+}
+
+@media (max-width: 600px) {
+  .timer {
+    font-size: 28px;
+    margin: 10px 0;
+  }
 }
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 15px;
-  margin: 20px 0;
+  gap: 10px;
+  margin: 15px 0;
 }
 
 .controls button {
-  padding: 40px 20px;
-  font-size: 18px;
+  padding: 15px 10px;
+  font-size: 16px;
   font-weight: bold;
   color: white;
   border: none;
   border-radius: 5px;
-  min-width: 120px;
-  width: 120px;
+  min-width: 100px;
+  width: 100px;
+  touch-action: manipulation;
+}
+
+@media (max-width: 600px) {
+  .controls {
+    gap: 5px;
+    margin: 10px 0;
+  }
+
+  .controls button {
+    padding: 10px 8px;
+    font-size: 14px;
+    min-width: 80px;
+    width: 80px;
+  }
 }
 
 /* Checkerboard pattern for race end */
@@ -406,14 +508,20 @@ button:disabled {
 
 /* Footer */
 .footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
   width: 100%;
   text-align: center;
-  margin-top: 30px;
-  font-size: 14px;
+  margin-top: auto;
+  font-size: 12px;
   color: #666;
+  padding: 10px 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .footer {
+    font-size: 10px;
+    padding: 5px 0;
+  }
 }
 
 .footer a {
@@ -431,13 +539,20 @@ button:disabled {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 200px;
+  font-size: 150px;
   font-weight: bold;
   color: #fff;
-  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
   z-index: 1001;
   animation: countdownPulse 1s ease-out;
   pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .countdown-display {
+    font-size: 80px;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
 }
 
 @keyframes countdownPulse {
@@ -458,7 +573,13 @@ button:disabled {
 /* Special styling for "GO!" */
 .countdown-display.go {
   color: #2ecc71;
-  font-size: 250px;
+  font-size: 180px;
+}
+
+@media (max-width: 600px) {
+  .countdown-display.go {
+    font-size: 100px;
+  }
 }
 /* Practice Mode Section Styling */
 .practice-mode-section {
