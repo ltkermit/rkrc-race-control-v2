@@ -224,41 +224,59 @@ raceWebSocket.onRaceStarted = function (state) {
 raceWebSocket.onTimerSync = function (newSecondsLeft) {
   secondsLeft = newSecondsLeft;
   updateTimerDisplay();
+  console.log("Timer synchronized on spectator page to:", newSecondsLeft, "seconds");
 };
 
 raceWebSocket.onFlagUpdate = function (flag, active, state) {
+  console.log(`Flag update received on spectator page: ${flag} is ${active ? 'active' : 'inactive'}`, state);
   if (flag === "yellow") {
     const indicator = document.getElementById("yellowIndicator");
-    if (active) {
-      indicator.classList.add("active");
-      document.body.style.backgroundColor = "#f1c40f";
-      showVisualNotification("Yellow Flag!", 2000);
-      playAudio("yellowOnSound");
+    if (indicator) {
+      if (active) {
+        indicator.classList.add("active");
+        document.body.style.backgroundColor = "#f1c40f";
+        showVisualNotification("Yellow Flag!", 2000);
+        playAudio("yellowOnSound");
+        console.log("Yellow flag activated on spectator page");
+      } else {
+        indicator.classList.remove("active");
+        if (!state.isRedFlag) {
+          document.body.style.backgroundColor = "#2ecc71";
+        }
+        showVisualNotification("Green Flag!", 2000);
+        playAudio("yellowOffSound");
+        console.log("Yellow flag cleared on spectator page");
+      }
     } else {
-      indicator.classList.remove("active");
-      document.body.style.backgroundColor = "#2ecc71";
-      showVisualNotification("Green Flag!", 2000);
-      playAudio("yellowOffSound");
+      console.error("Yellow indicator element not found");
     }
   } else if (flag === "red") {
     const indicator = document.getElementById("redIndicator");
-    if (active) {
-      indicator.classList.add("active");
-      document.body.style.backgroundColor = "#e74c3c";
-      showVisualNotification("Red Flag!", 2000);
-      playAudio("redOnSound");
-      isRunning = false;
-      clearInterval(timerInterval);
-    } else {
-      indicator.classList.remove("active");
-      if (!state.isYellowFlag) {
-        document.body.style.backgroundColor = "#2ecc71";
+    if (indicator) {
+      if (active) {
+        indicator.classList.add("active");
+        document.body.style.backgroundColor = "#e74c3c";
+        showVisualNotification("Red Flag!", 2000);
+        playAudio("redOnSound");
+        isRunning = false;
+        clearInterval(timerInterval);
+        console.log("Red flag activated on spectator page, timer stopped");
+      } else {
+        indicator.classList.remove("active");
+        if (!state.isYellowFlag) {
+          document.body.style.backgroundColor = "#2ecc71";
+        }
+        showVisualNotification("Red Flag Cleared!", 2000);
+        playAudio("redOffSound");
+        isRunning = true;
+        startTimer();
+        console.log("Red flag cleared on spectator page, timer restarted");
       }
-      showVisualNotification("Red Flag Cleared!", 2000);
-      playAudio("redOffSound");
-      isRunning = true;
-      startTimer();
+    } else {
+      console.error("Red indicator element not found");
     }
+  } else {
+    console.warn("Unknown flag type received:", flag);
   }
 };
 

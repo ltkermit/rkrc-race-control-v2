@@ -423,4 +423,32 @@
   globalThis.addEventListener("unload", () => {
     raceWebSocket.disconnect();
   });
+  // Periodic timer sync for spectators
+function startTimerSyncForSpectators() {
+  if (raceWebSocket.isReady()) {
+    const syncInterval = setInterval(() => {
+      if (isRunning) {
+        raceWebSocket.send({
+          type: "timer-sync",
+          secondsLeft: secondsLeft
+        });
+        console.log("Sent timer sync to spectators:", secondsLeft, "seconds left");
+      } else {
+        clearInterval(syncInterval);
+        console.log("Stopped timer sync as race is no longer running");
+      }
+    }, 5000); // Sync every 5 seconds
+    console.log("Started periodic timer sync for spectators");
+  } else {
+    console.warn("WebSocket not ready, timer sync not started");
+  }
+}
+
+// Ensure start race button triggers timer sync
+if (document.getElementById("startRace")) {
+  document.getElementById("startRace").addEventListener('click', () => {
+    setTimeout(startTimerSyncForSpectators, 3000); // Delay slightly to ensure race starts
+    console.log("Timer sync scheduled to start after race begins");
+  });
+}
 })();
