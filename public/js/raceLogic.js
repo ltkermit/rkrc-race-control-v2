@@ -299,12 +299,18 @@ function toggleRedFlag() {
 
 // Function to handle clearing flags with delay and audio for nosteward page
 function clearFlagWithDelayAndAudio(flagType, playAudio) {
-  if (globalThis.isNoStewardPage && (flagType === 'yellow' && isYellowFlag) || (flagType === 'red' && isRedFlag)) {
+  const isNoSteward = globalThis.location && globalThis.location.pathname.includes('nosteward.html');
+  if (isNoSteward && ((flagType === 'yellow' && isYellowFlag) || (flagType === 'red' && isRedFlag))) {
     console.log(`Clearing ${flagType} flag with delay and audio for nosteward page`);
     // Play getready audio
     playAudio('getReadySound', 'Get Ready', 2000);
     // Disable buttons during delay
-    globalThis.disableButtonsDuringDelay();
+    if (typeof globalThis.disableButtonsDuringDelay === 'function') {
+      globalThis.disableButtonsDuringDelay();
+      console.log("Buttons disabled during delay");
+    } else {
+      console.warn("disableButtonsDuringDelay function not found");
+    }
     // Random delay between 2000-4000ms (2-4 seconds)
     const delay = Math.floor(Math.random() * 2000) + 2000;
     console.log(`Delaying clear of ${flagType} flag by ${delay}ms`);
@@ -320,7 +326,12 @@ function clearFlagWithDelayAndAudio(flagType, playAudio) {
       }
       updateBackgroundColor();
       // Re-enable buttons after delay
-      globalThis.reEnableButtonsAfterDelay();
+      if (typeof globalThis.reEnableButtonsAfterDelay === 'function') {
+        globalThis.reEnableButtonsAfterDelay();
+        console.log("Buttons re-enabled after delay");
+      } else {
+        console.warn("reEnableButtonsAfterDelay function not found");
+      }
       // Play clear audio after delay
       const clearAudioId = flagType === 'yellow' ? 'yellowOffSound' : 'redOffSound';
       const clearMessage = flagType === 'yellow' ? 'Yellow Flag Cleared' : 'Red Flag Cleared';
@@ -329,6 +340,7 @@ function clearFlagWithDelayAndAudio(flagType, playAudio) {
     }, delay);
     return null; // Return null initially as audio is handled separately
   } else {
+    console.log(`Standard flag behavior for ${flagType}. Is No Steward: ${isNoSteward}, Flag State: ${flagType === 'yellow' ? isYellowFlag : isRedFlag}`);
     // Standard behavior for other pages or if flag is being set
     return flagType === 'yellow' ? (isYellowFlag ? 'yellowOnSound' : 'yellowOffSound') : (isRedFlag ? 'redOnSound' : 'redOffSound');
   }
@@ -404,10 +416,14 @@ function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalA
 
   if (yellowFlagBtn) {
     yellowFlagBtn.addEventListener('click', () => {
-      if (globalThis.isNoStewardPage && isYellowFlag) {
+      const isNoSteward = globalThis.location && globalThis.location.pathname.includes('nosteward.html');
+      console.log(`Yellow Flag button clicked. Is No Steward Page: ${isNoSteward}, Is Yellow Flag Active: ${isYellowFlag}`);
+      if (isNoSteward && isYellowFlag) {
         // Clearing yellow flag on nosteward page
+        console.log("Proceeding to clear yellow flag with delay and audio");
         clearFlagWithDelayAndAudio('yellow', playAudio);
       } else {
+        console.log("Using standard toggle for yellow flag");
         const audioId = toggleYellowFlag();
         playAudio(audioId, audioId === 'yellowOnSound' ? 'Yellow Flag Thrown' : 'Yellow Flag Cleared', 2000);
       }
@@ -419,10 +435,14 @@ function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalA
 
   if (redFlagBtn) {
     redFlagBtn.addEventListener('click', () => {
-      if (globalThis.isNoStewardPage && isRedFlag) {
+      const isNoSteward = globalThis.location && globalThis.location.pathname.includes('nosteward.html');
+      console.log(`Red Flag button clicked. Is No Steward Page: ${isNoSteward}, Is Red Flag Active: ${isRedFlag}`);
+      if (isNoSteward && isRedFlag) {
         // Clearing red flag on nosteward page
+        console.log("Proceeding to clear red flag with delay and audio");
         clearFlagWithDelayAndAudio('red', playAudio);
       } else {
+        console.log("Using standard toggle for red flag");
         const audioId = toggleRedFlag();
         playAudio(audioId, audioId === 'redOnSound' ? 'Red Flag Thrown' : 'Red Flag Cleared', 2000);
       }
