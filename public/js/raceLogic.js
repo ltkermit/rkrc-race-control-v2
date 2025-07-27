@@ -297,6 +297,43 @@ function toggleRedFlag() {
   return isRedFlag ? 'redOnSound' : 'redOffSound';
 }
 
+// Function to handle clearing flags with delay and audio for nosteward page
+function clearFlagWithDelayAndAudio(flagType, playAudio) {
+  if (globalThis.isNoStewardPage && (flagType === 'yellow' && isYellowFlag) || (flagType === 'red' && isRedFlag)) {
+    console.log(`Clearing ${flagType} flag with delay and audio for nosteward page`);
+    // Play getready audio
+    playAudio('getReadySound', 'Get Ready', 2000);
+    // Disable buttons during delay
+    globalThis.disableButtonsDuringDelay();
+    // Random delay between 2000-4000ms (2-4 seconds)
+    const delay = Math.floor(Math.random() * 2000) + 2000;
+    console.log(`Delaying clear of ${flagType} flag by ${delay}ms`);
+    setTimeout(() => {
+      if (flagType === 'yellow') {
+        isYellowFlag = false;
+        yellowFlagBtn.textContent = 'Yellow Flag';
+      } else if (flagType === 'red') {
+        isRedFlag = false;
+        isRunning = true;
+        redFlagBtn.textContent = 'Red Flag';
+        startTimer();
+      }
+      updateBackgroundColor();
+      // Re-enable buttons after delay
+      globalThis.reEnableButtonsAfterDelay();
+      // Play clear audio after delay
+      const clearAudioId = flagType === 'yellow' ? 'yellowOffSound' : 'redOffSound';
+      const clearMessage = flagType === 'yellow' ? 'Yellow Flag Cleared' : 'Red Flag Cleared';
+      playAudio(clearAudioId, clearMessage, 2000);
+      console.log(`${flagType} flag cleared after delay`);
+    }, delay);
+    return null; // Return null initially as audio is handled separately
+  } else {
+    // Standard behavior for other pages or if flag is being set
+    return flagType === 'yellow' ? (isYellowFlag ? 'yellowOnSound' : 'yellowOffSound') : (isRedFlag ? 'redOnSound' : 'redOffSound');
+  }
+}
+
 // Restart race
 function restartRace() {
   console.log("Restart button clicked");
@@ -367,8 +404,13 @@ function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalA
 
   if (yellowFlagBtn) {
     yellowFlagBtn.addEventListener('click', () => {
-      const audioId = toggleYellowFlag();
-      playAudio(audioId, audioId === 'yellowOnSound' ? 'Yellow Flag Thrown' : 'Yellow Flag Cleared', 2000);
+      if (globalThis.isNoStewardPage && isYellowFlag) {
+        // Clearing yellow flag on nosteward page
+        clearFlagWithDelayAndAudio('yellow', playAudio);
+      } else {
+        const audioId = toggleYellowFlag();
+        playAudio(audioId, audioId === 'yellowOnSound' ? 'Yellow Flag Thrown' : 'Yellow Flag Cleared', 2000);
+      }
     });
     console.log("Yellow Flag button listener attached");
   } else {
@@ -377,8 +419,13 @@ function initializeRaceLogic(noSleep, playAudio, showCountdown, preloadCriticalA
 
   if (redFlagBtn) {
     redFlagBtn.addEventListener('click', () => {
-      const audioId = toggleRedFlag();
-      playAudio(audioId, audioId === 'redOnSound' ? 'Red Flag Thrown' : 'Red Flag Cleared', 2000);
+      if (globalThis.isNoStewardPage && isRedFlag) {
+        // Clearing red flag on nosteward page
+        clearFlagWithDelayAndAudio('red', playAudio);
+      } else {
+        const audioId = toggleRedFlag();
+        playAudio(audioId, audioId === 'redOnSound' ? 'Red Flag Thrown' : 'Red Flag Cleared', 2000);
+      }
     });
     console.log("Red Flag button listener attached");
   } else {
