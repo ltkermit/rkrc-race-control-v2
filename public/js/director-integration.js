@@ -136,19 +136,19 @@
 
   // WebSocket event handlers
   raceWebSocket.onConnected = function () {
-    console.log("WebSocket connected successfully");
+    console.log("Director WebSocket connected successfully");
     updateConnectionStatus(true);
   };
 
   raceWebSocket.onDisconnected = function () {
-    console.log("WebSocket disconnected");
+    console.log("Director WebSocket disconnected");
     updateConnectionStatus(false);
     showVisualNotification("Connection Lost - Attempting to Reconnect", 3000);
     disableAllControls();
   };
 
   raceWebSocket.onReconnectFailed = function () {
-    console.log("Failed to reconnect WebSocket");
+    console.log("Failed to reconnect Director WebSocket");
     showVisualNotification(
       "Failed to reconnect. Please refresh the page.",
       5000,
@@ -166,11 +166,11 @@
         `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
     }
     updateConnectionStatus(true);
-    console.log("Received initial state:", state, "Client count:", clientCount);
+    console.log("Received initial state for director:", state, "Client count:", clientCount);
 
     // Sync with current state if rejoining
     if (state.isRunning) {
-      console.log("Race is already running, syncing state");
+      console.log("Race is already running, syncing state on director page");
       // Update UI to match current race state
       secondsLeft = state.secondsLeft;
       totalSeconds = state.totalSeconds;
@@ -200,7 +200,10 @@
       // Start timer if race is running
       if (isRunning) {
         startTimer();
+        console.log("Timer started on director page for running race");
       }
+    } else {
+      console.log("No active race on initial load for director");
     }
   };
 
@@ -210,7 +213,7 @@
       clientCountElement.textContent =
         `${clientCount} device${clientCount !== 1 ? "s" : ""}`;
     }
-    console.log("Client update received:", clientCount, "clients");
+    console.log("Client update received for director:", clientCount, "clients", clients);
 
     // Update connected clients list
     const clientsList = document.getElementById("clientsList");
@@ -230,8 +233,12 @@
       }
                 </div>
             `).join("");
+      console.log("Updated client list UI with", clients.length, "clients");
     } else if (connectedClientsDiv) {
       connectedClientsDiv.style.display = "none";
+      console.log("No clients to display, hiding client list");
+    } else {
+      console.warn("Client list elements not found in DOM");
     }
   };
 

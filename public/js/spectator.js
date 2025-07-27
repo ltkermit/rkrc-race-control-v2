@@ -143,6 +143,7 @@ raceWebSocket.connect(false, spectatorName);
 raceWebSocket.onConnected = function () {
   updateConnectionStatus(true);
   showVisualNotification("Connected to Race Server", 2000);
+  console.log("Spectator WebSocket connected successfully");
 };
 
 raceWebSocket.onDisconnected = function () {
@@ -153,12 +154,14 @@ raceWebSocket.onDisconnected = function () {
   if (timerInterval) {
     clearInterval(timerInterval);
   }
+  console.log("Spectator WebSocket disconnected");
 };
 
 raceWebSocket.onInitialState = function (state, clientCount) {
   document.getElementById("clientCount").textContent = `${clientCount} device${
     clientCount !== 1 ? "s" : ""
   }`;
+  console.log("Initial state received for spectator:", state, "Client count:", clientCount);
 
   // Sync with current race state
   if (state.isRunning) {
@@ -170,19 +173,25 @@ raceWebSocket.onInitialState = function (state, clientCount) {
       ? "Practice Mode - In Progress"
       : "Race In Progress";
     document.body.style.backgroundColor = "#2ecc71";
+    console.log("Race is running, state updated on spectator page");
+  } else {
+    console.log("Race is not running on initial load");
   }
 
   // Update voice
   updateVoiceSources(state.voice);
+  console.log("Voice updated to:", state.voice);
 
   // Update flags
   if (state.isYellowFlag) {
     document.getElementById("yellowIndicator").classList.add("active");
     document.body.style.backgroundColor = "#f1c40f";
+    console.log("Yellow flag active on initial load");
   }
   if (state.isRedFlag) {
     document.getElementById("redIndicator").classList.add("active");
     document.body.style.backgroundColor = "#e74c3c";
+    console.log("Red flag active on initial load");
   }
 };
 
@@ -190,6 +199,7 @@ raceWebSocket.onClientUpdate = function (clientCount, clients) {
   document.getElementById("clientCount").textContent = `${clientCount} device${
     clientCount !== 1 ? "s" : ""
   }`;
+  console.log("Client update received for spectator:", clientCount, "clients", clients);
 };
 
 raceWebSocket.onRaceStarted = function (state) {
@@ -208,6 +218,7 @@ raceWebSocket.onRaceStarted = function (state) {
   document.body.style.backgroundColor = "#2ecc71";
   showVisualNotification("Race Started!", 3000);
   playAudio("beepSound");
+  console.log("Race started event received on spectator page", state);
 };
 
 raceWebSocket.onTimerSync = function (newSecondsLeft) {
