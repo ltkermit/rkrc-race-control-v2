@@ -322,16 +322,20 @@ class RaceControlServer {
           type: "race-started",
           state: this.raceState,
         }, client.id);
+        console.log(`Race started by director ${client.id}`);
         break;
 
+      case "timer-sync":
       case "timer-update":
         this.raceState.secondsLeft = message.secondsLeft;
         this.broadcast({
           type: "timer-sync",
           secondsLeft: message.secondsLeft,
         }, client.id);
+        console.log(`Timer sync broadcasted by director ${client.id}: ${message.secondsLeft} seconds left`);
         break;
 
+      case "flag-update":
       case "flag-change":
         if (message.flag === "yellow") {
           this.raceState.isYellowFlag = message.active;
@@ -339,15 +343,16 @@ class RaceControlServer {
         } else if (message.flag === "red") {
           this.raceState.isRedFlag = message.active;
           if (message.active) this.raceState.redFlagCount++;
-          this.raceState.isRunning = message.isRunning ?? this.raceState.isRunning;
+          // Check for isRunning in message.state if available, otherwise use existing
+          this.raceState.isRunning = (message.state && message.state.isRunning !== undefined) ? message.state.isRunning : message.isRunning ?? this.raceState.isRunning;
         }
-        
         this.broadcast({
           type: "flag-update",
           flag: message.flag,
           active: message.active,
           state: this.raceState,
         }, client.id);
+        console.log(`Flag update broadcasted by director ${client.id}: ${message.flag} is ${message.active}`);
         break;
 
       case "race-end":
@@ -356,6 +361,7 @@ class RaceControlServer {
           type: "race-ended",
           state: this.raceState,
         }, client.id);
+        console.log(`Race ended by director ${client.id}`);
         break;
 
       case "race-restart":
@@ -364,6 +370,7 @@ class RaceControlServer {
           type: "race-restarted",
           state: this.raceState,
         }, client.id);
+        console.log(`Race restarted by director ${client.id}`);
         break;
 
       case "voice-change":
@@ -372,11 +379,20 @@ class RaceControlServer {
           type: "voice-changed",
           voice: message.voice,
         }, client.id);
+        console.log(`Voice changed to ${message.voice} by director ${client.id}`);
         break;
 
       case "ping":
         this.sendToClient(client, { type: "pong" });
         break;
+
+      default:
+        console.log(`Unhandled message type: ${message.type}`);
+        // Broadcast unhandled messages to spectators if from director
+        if (client.isDirector) {
+          this.broadcast(message, client.id);
+          console.log(`Broadcasted unhandled message type ${message.type} from director ${client.id}`);
+        }
     }
   }
 
